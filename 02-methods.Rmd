@@ -1,0 +1,179 @@
+# Methods
+
+This section describes the closed-loop simulation framework
+developed for testing a proposed WCVI herring re-opening
+procedure. We first describe the three operating models used
+to represent alternative hypotheses about WCVI herring
+population dynamics. We then describe the management
+procedure, including the assessment model, the harvest control
+rule, and the spatial TAC allocation methods. Finally, we
+describe the simulation design and performance metrics.
+
+## Operating models
+
+Three operating models (OMs) are used to represent the range
+of assumptions about WCVI herring population dynamics. All
+three OMs are conditioned on historical data from 1951 to
+2024 and share the same data inputs (catch, spawn indices, and
+age composition). They differ in their treatment of natural
+mortality and spatial structure.
+
+### *SISCAH-DDM*: density-dependent mortality
+
+The *SISCAH-DDM* model is the current basis for DFO Pacific
+Herring stock assessments [@johnson2024SCAH]. It treats WCVI
+herring as a single panmictic stock with density-dependent
+natural mortality, where natural mortality rates increase at
+low stock sizes. Under this model, unfished biomass is
+approximately 42 kt, $B_{MSY}$ is approximately 17.4 kt,
+the limit reference point (LRP) is $0.3 B_0 \approx 13.5$ kt,
+and the maximum sustainable yield is approximately 1.6 kt.
+
+### *SISCAH-1S-Pred*: single-stock with predation
+
+The *SISCAH-1S-Pred* model treats WCVI herring as a single
+stock but replaces density-dependent mortality with explicit
+predation mortality from four major predator groups: Humpback
+Whales, Steller Sea Lions, Harbour Seals, and Pacific Hake
+[@doherty2024predation]. Predation mortality is modelled
+using functional response relationships and is driven by
+estimated predator abundance trends. Under this model,
+unfished biomass is approximately 26.2 kt, substantially
+lower than the *SISCAH-DDM* estimate, reflecting higher total
+natural mortality when predation is included explicitly.
+
+### *SISCAH-3S-Pred*: three-stock with predation {#sec:3SpredM}
+
+The *SISCAH-3S-Pred* model, developed in Phase 2 of this
+project [@TODO_phase2], splits the WCVI herring population
+into three independent stocks corresponding to PFMAs 23, 24,
+and 25. Each stock is fit independently to PFMA-level catch,
+spawn index, and age composition data. Predation mortality
+is included as in *SISCAH-1S-Pred*, with coast-wide predator
+consumption allocated among PFMAs in proportion to vulnerable
+biomass.
+
+The aggregate unfished biomass under *SISCAH-3S-Pred* is
+approximately 17.1 kt, which is close to the $B_{MSY}$
+estimate from the *SISCAH-DDM* model. This means that the
+minimum escapement reference point ($B_{ref} = B_{MSY|DDM}$)
+used in the harvest control rule is near the operating model's
+unfished biomass level, leading to frequent fishery closures.
+
+Using *SISCAH-3S-Pred* as an operating model while the
+management procedure assumes a single stock creates a
+structural mismatch that tests the robustness of the MP to
+unrecognised spatial structure and predation.
+
+## Management procedure
+
+The management procedure consists of two steps: (i) an
+aggregate stock assessment that determines a coastwide TAC,
+and (ii) a spatial allocation step that distributes the TAC
+among PFMAs.
+
+### Step 1: aggregate assessment and harvest control rule
+
+In the first step, data from all three PFMAs are aggregated
+into a single coastwide data set. Spawn indices are summed
+across PFMAs, catches are summed, and weight-at-age is
+averaged. A single-stock *SISCAH* assessment model with
+density-independent mortality (DIM) is then fit to the
+aggregated data to estimate current spawning biomass.
+
+The harvest control rule (HCR) is a minimum escapement rule
+similar to the current DFO rule for BC herring. The rule has
+two parameters:
+
+- $B_{ref}$: the minimum escapement biomass, set equal to
+  $B_{MSY}$ from the *SISCAH-DDM* model (approximately
+  17.35 kt); and
+- $U_{ref}$: the maximum harvest rate, set at 8.5\%.
+
+The HCR operates as follows:
+
+\begin{equation}
+U_t = \begin{cases}
+0 & \text{if } \hat{B}_t \leq B_{ref} \\
+\displaystyle U_{ref} \cdot \left(1 -
+  \frac{B_{ref}}{\hat{B}_t} \right) &
+  \text{if } \hat{B}_t > B_{ref}
+\end{cases}
+\end{equation}
+
+\noindent where $\hat{B}_t$ is the estimated aggregate
+spawning biomass from the assessment model and $U_t$ is
+the harvest rate applied in year $t$. The TAC is then
+$\text{TAC}_t = U_t \cdot \hat{B}_t$. When biomass is at
+or below $B_{ref}$, the fishery is closed. When biomass
+exceeds $B_{ref}$, the TAC is the surplus above $B_{ref}$,
+up to a maximum harvest rate of $U_{ref}$.
+
+### Step 2: spatial TAC allocation {#sec:allocation}
+
+In the second step, the aggregate TAC is distributed among
+PFMAs. Three allocation methods are tested:
+
+1. **Spawn index (SI) allocation**: the TAC is allocated in
+   proportion to the average spawn index observed in each
+   PFMA over the most recent three years. This method uses
+   the most current data on relative abundance to guide
+   allocation.
+
+2. **Catch allocation**: the TAC is allocated in proportion
+   to the average catch taken in each PFMA over the most
+   recent years with non-zero catches. This method reflects
+   historical fishing patterns.
+
+3. **All PFMA 23 allocation**: the entire TAC is allocated to
+   PFMA 23 (Barkley Sound). This method represents a scenario
+   where fishing is concentrated in a single area, which may
+   reflect operational preferences or access considerations.
+
+Within each PFMA, the allocated TAC is further distributed
+among commercial fleets (seine roe, gillnet, and spawn-on-kelp
+or bough) according to fixed fleet allocation proportions.
+
+## Simulation design
+
+Closed-loop simulations project the operating model forward
+from the end of the historical period (2024) for
+approximately 25 years under the management procedure
+described above. In each projection year, the following
+steps occur:
+
+1. The OM generates data (spawn indices with observation
+   error, catch-at-age) from the true population state;
+2. The MP aggregates data across PFMAs and fits the
+   single-stock assessment model;
+3. The HCR determines the aggregate TAC based on
+   estimated biomass;
+4. The TAC is allocated among PFMAs using the chosen
+   allocation method;
+5. Catch is removed from each PFMA population in the OM;
+6. The OM advances the population by one year, including
+   recruitment, natural mortality, and predation.
+
+Simulations are repeated across 100 stochastic replicates
+to capture uncertainty in future recruitment and predator
+abundance. Operating model parameters are drawn from MCMC
+posterior distributions to incorporate parameter uncertainty.
+
+## Performance metrics
+
+Performance is evaluated using two metrics at the PFMA level,
+since no formal biological reference points exist for
+individual PFMAs:
+
+1. **Probability of low biomass**: the proportion of
+   projection years and replicates in which spawning biomass
+   in a given PFMA falls below its historical minimum
+   observed biomass.
+
+2. **Probability of low catch**: the proportion of projection
+   years and replicates in which the catch from a given PFMA
+   falls below its historical minimum non-zero catch.
+
+These metrics provide a relative measure of how each
+allocation method affects the risk of poor outcomes at the
+PFMA level under each operating model.

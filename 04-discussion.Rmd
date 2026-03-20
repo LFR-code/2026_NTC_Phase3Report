@@ -1,0 +1,153 @@
+# Discussion
+
+This paper describes research activities for the third year
+of the ?aayaaqa (Herring) Spawn Dynamics collaboration.
+Building on the three-stock model with predation
+(*SISCAH-3S-Pred*) developed in Phase 2, we developed a
+closed-loop simulation framework and used it to test a
+proposed minimum escapement harvest control rule for WCVI
+herring under three operating models of increasing ecological
+complexity. The *SISCAH-3S-Pred* model serves as a robustness
+test, representing a scenario where the true population is
+spatially structured and subject to explicit predation
+mortality while the management procedure treats WCVI herring
+as a single stock.
+
+## Implications of operating model choice
+
+The choice of operating model has a much larger effect on
+expected MP performance than the choice of spatial TAC
+allocation method. Under the *SISCAH-DDM* operating model,
+the MP performs as designed, maintaining biomass above
+reference levels and producing catches near the maximum
+sustainable yield. Under the *SISCAH-1S-Pred* OM, catches
+are reduced and biomass settles near the minimum escapement
+level. Under the *SISCAH-3S-Pred* OM, the fishery is
+effectively closed because aggregate biomass is already at
+or below the minimum escapement threshold derived from the
+DDM model.
+
+These results illustrate a well-known challenge in fisheries
+management: the performance of a harvest control rule depends
+critically on the operating model used to evaluate it. The
+three operating models used here span a range of assumptions
+about natural mortality and spatial structure, but all are
+conditioned on the same historical data and produce similar
+historical biomass trajectories. Their long-term outlooks
+differ substantially because of different assumptions about
+future predation mortality and the resulting equilibrium
+biomass levels.
+
+The divergence between operating models highlights the
+importance of the predation modelling work from earlier phases
+of this project [@doherty2024predation; @TODO_phase2].
+Including predation explicitly reduces the expected unfished
+biomass from approximately 42 kt (DDM) to approximately
+26 kt (1S-Pred) to approximately 17 kt (3S-Pred). Since the
+minimum escapement reference point is derived from the DDM
+model ($B_{ref} = B_{MSY|DDM} \approx 17.35$ kt), it
+becomes increasingly difficult to open the fishery as the
+assumed unfished biomass decreases.
+
+## Spatial allocation
+
+The spatial TAC allocation method has very little effect on
+MP performance under any operating model tested. This is
+partly because catches are small or zero under the
+predation-based OMs, so the method used to distribute them
+is inconsequential. Even under the DDM OM where catches are
+larger, the allocation among PFMAs does not substantially
+change overall conservation risk.
+
+This result does not mean that spatial allocation is
+unimportant in general. Under scenarios with higher
+productivity or lower predation mortality, the spatial
+distribution of catch could have meaningful effects on
+individual PFMA stocks, particularly if some PFMAs are less
+productive than others. The current results are specific to
+the operating models and reference points tested here.
+
+## Assessment model performance
+
+The *SISCAH-DIM* assessment model used in the MP performs
+well under the DDM operating model, where the structural
+assumptions are well matched. Under the predation-based
+OMs, the DIM formulation has more flexibility to track high
+index values, leading to over-estimates of biomass during the
+projection period. This is consistent with expectations: a
+model that does not account for predation mortality will
+tend to attribute observed biomass declines to lower
+productivity or higher observation error, rather than
+predation, and may therefore over-estimate current stock
+status.
+
+The over-estimation bias is more pronounced under the
+*SISCAH-1S-Pred* OM than under the *SISCAH-3S-Pred* OM.
+Under the three-stock OM, the flat biomass trajectory during
+the projection period limits the extent to which the
+assessment can over-estimate, because indices provide a
+strong signal of low and stable abundance. The implication
+is that assessment model performance improves when the
+population is near equilibrium, even if the model structure
+is mis-specified.
+
+## Limitations and future work
+
+Several limitations of the current analysis should be noted.
+
+**Reference points**: the minimum escapement reference point
+used here ($B_{ref} = B_{MSY|DDM}$) is derived from the DDM
+operating model. If the true system dynamics are better
+represented by a predation model, then $B_{MSY}$ would be
+lower and the HCR may perform differently. Future work could
+explore harvest control rules tuned to reference points from
+predation-based models.
+
+**Process error in projections**: the current simulation
+framework draws recruitment process errors from conditioned
+posteriors, but there are outstanding questions about
+whether the variance of process errors in the projection
+period adequately represents uncertainty. Projection
+uncertainty envelopes appear flat in some simulations,
+suggesting that the process error implementation may need
+refinement.
+
+**Movement among PFMAs**: the *SISCAH-3S-Pred* operating
+model treats the three PFMA stocks as independent, with no
+movement of fish among areas. In reality, herring mix during
+the offshore feeding season and some level of exchange among
+PFMAs is likely. Including movement could change the
+effective productivity of individual PFMAs and alter the
+impact of spatial allocation methods.
+
+**Predator dynamics**: future predator abundance is projected
+using surplus production models for each predator species.
+These projections assume that predator populations will
+stabilise near carrying capacity, which appears reasonable
+for most species but remains uncertain for Humpback Whales.
+Changes in predator abundance would directly affect herring
+productivity and the performance of harvest control rules.
+
+**Additional allocation methods**: only three allocation
+methods were tested. Other approaches, such as allocating
+proportional to estimated PFMA-level biomass from a spatial
+assessment model, or using adaptive allocation based on
+real-time monitoring, could be explored in future work.
+
+## Conclusions
+
+The closed-loop simulation framework developed in this phase
+provides a tool for evaluating WCVI herring management
+procedures under a range of ecological assumptions. The key
+finding is that the performance of the proposed minimum
+escapement rule is driven primarily by assumptions about
+natural and predation mortality, rather than by the spatial
+allocation of catch. Under operating models that include
+explicit predation, the fishery would be closed most of the
+time because biomass is near or below the minimum escapement
+level derived from the standard DDM assessment. This result
+reinforces the importance of resolving uncertainty about
+predation mortality for WCVI herring management, and
+demonstrates the value of testing management procedures
+against robustness scenarios that include alternative
+ecological hypotheses.

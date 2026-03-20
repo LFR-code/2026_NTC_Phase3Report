@@ -1,0 +1,86 @@
+# Executive Summary {-}
+
+## Key Points {-}
+
+- This working paper summarises analyses completed in the
+  third year (2025/26) of the ?aayaaqa (Herring) Spawn
+  Dynamics project.
+
+- In 2024/25, population dynamics models were expanded to
+  include spatial stock structure (three stocks corresponding
+  to PFMAs 23, 24, and 25), predation mortality from major
+  herring predators, and age-dependent egg production. The
+  three-stock model with predation (*SISCAH-3S-Pred*) was
+  recommended as the most practical tool for evaluating
+  management procedures.
+
+- In 2025/26, we developed a closed-loop simulation
+  framework for testing a potential WCVI herring re-opening
+  procedure. The management procedure (MP) uses a two-step
+  harvest control rule: (i) fit an aggregate single-stock
+  assessment model to combined WCVI data and apply a minimum
+  escapement rule to determine a coastwide total allowable
+  catch (TAC), and (ii) allocate the TAC among PFMAs based
+  on recent spawn index proportions or other allocation
+  methods.
+
+- The MP was tested under three operating models (OMs) of
+  increasing ecological complexity: (i) the *SISCAH-DDM*
+  density-dependent mortality model, (ii) the *SISCAH-1S-Pred*
+  single-stock model with explicit predation, and (iii) the
+  *SISCAH-3S-Pred* three-stock model with explicit predation.
+  The *SISCAH-3S-Pred* model serves as a robustness test,
+  representing a scenario where the true population is
+  spatially structured while the assessment model treats WCVI
+  herring as a single stock.
+
+- Under the *SISCAH-DDM* operating model, the MP performs as
+  designed, maintaining biomass above the limit reference
+  point approximately 75\% of the time and producing catches
+  near the maximum sustainable yield of approximately
+  1,600 t.
+
+- Under the *SISCAH-1S-Pred* operating model, catches are
+  reduced and biomass declines toward the minimum escapement
+  reference point ($B_{ref} = B_{MSY|DDM}$), reflecting the
+  lower productivity expected when predation mortality is
+  included.
+
+- Under the *SISCAH-3S-Pred* operating model, the fishery is
+  closed more than 50\% of the time because aggregate biomass
+  is near the minimum escapement level. The spatial
+  allocation method has very little effect on performance
+  given the low catches in simulations.
+
+- We tested three spatial TAC allocation methods: (i) recent
+  average spawn index proportions, (ii) recent average catch
+  proportions, and (iii) allocating 100\% of the TAC to
+  PFMA 23 (Barkley Sound). Differences among allocation
+  methods were negligible under all operating models.
+
+## Project Summary {-}
+
+This project develops a Nuu-chah-nulth approach to
+ecosystem-based fisheries management (EBFM) by integrating
+life-history traits (e.g., age, size, fecundity) and spawning
+dynamics (e.g., location, timing) in herring population models
+for the West Coast of Vancouver Island (WCVI). These models
+represent key assumptions about how herring populations
+respond to changing ecosystem conditions and fisheries on a
+finer spatial scale than is considered in current assessment
+models for WCVI Pacific Herring.
+
+This paper summarises analyses conducted in the third year
+(2025/26) of the ?aayaaqa (Herring) Spawn Dynamics project.
+Building on the three-stock model with predation
+(*SISCAH-3S-Pred*) developed in Phase 2, we developed a
+closed-loop simulation (management strategy evaluation)
+framework to test a proposed WCVI herring re-opening
+procedure. The *SISCAH-3S-Pred* model is used as a
+robustness test operating model, representing a scenario in
+which the true population is spatially structured and subject
+to predation mortality, while the management procedure uses
+a simpler single-stock assessment. Results demonstrate how
+assumptions about predation and spatial structure affect the
+expected performance of harvest control rules and spatial TAC
+allocation methods.

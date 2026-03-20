@@ -1,0 +1,111 @@
+---
+title: |
+  ?aayaaqa (Herring) Spawn Dynamics
+author: |
+  Landmark Fisheries Research BCSRIF2-3\
+  Working Paper for Uu-a-thluk Fisheries
+
+
+address: |
+  ^1^Landmark Fisheries Research\
+     213-2414 St Johns Street\
+     Port Moody, British Columbia, V3H 2B1, Canada\
+
+
+date: "March 2026"
+geometry: letterpaper
+toc: true
+fontsize: 12pt
+lineno: false #line number
+draft: true # double spacing on
+csl-refs: true
+numbersections: true
+link-citations: true
+bibliography: bib/library.bib
+
+# Any extra LaTeX code for the header:
+header-includes:
+  - \usepackage{color}
+  - \usepackage{colortbl}
+  - \usepackage{multirow}
+  - \usepackage{lscape}
+  - \usepackage{pdflscape}
+  - \usepackage{longtable}
+  - \usepackage{bbold}
+  - \usepackage{float}
+  - \usepackage{tikz}
+  - \usepackage{cmbright}
+  - \usepackage{mathrsfs}
+  - \usepackage{amsmath}
+  - \usepackage{amssymb}
+  - \usepackage{pxfonts}
+  - \DeclareMathOperator{\logit}{logit}
+  - \newcommand{\blandscape}{\begin{landscape}}
+  - \newcommand{\elandscape}{\end{landscape}}
+  - \DeclareMathOperator*{\argmax}{arg\,max}
+  - \DeclareMathOperator*{\argmin}{arg\,min}
+  - \usepackage[titletoc, title]{appendix}
+---
+
+```{r setup, echo=FALSE, cache=FALSE, message=FALSE, results='hide', warning=FALSE}
+library(knitr)
+if (is_latex_output()) {
+  knitr_figs_dir <- "knitr-figs-pdf"
+  knitr_cache_dir <- "knitr-cache-pdf"
+  fig_out_type <- "pdf"
+  kable_format <- "latex"
+} else {
+  knitr_figs_dir <- "knitr-figs-docx"
+  knitr_cache_dir <- "knitr-cache-docx"
+  fig_out_type <- "png"
+  kable_format <- "pandoc"
+  options(knitr.table.format = "pandoc")
+}
+fig_asp <- 0.618
+fig_width <- 9
+fig_out_width <- "6in"
+fig_dpi <- 180
+fig_align <- "center"
+fig_pos <- "htb"
+opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "#>",
+  fig.path = knitr_figs_dir,
+  cache.path = knitr_cache_dir,
+  fig.asp = fig_asp,
+  fig.width = fig_width,
+  out.width = fig_out_width,
+  echo = FALSE,
+  cache.comments = FALSE,
+  dev = fig_out_type,
+  dpi = fig_dpi,
+  fig.align = fig_align,
+  fig.pos = fig_pos
+)
+```
+
+```{r loadStuff, echo = FALSE, include = FALSE, message = FALSE }
+
+# packages
+library(dplyr)
+library(readr)
+library(tibble)
+library(kableExtra)
+library(bookdown)
+library(knitr)
+library(tidyverse)
+library(here)
+
+# TODO: source plotting and analysis scripts
+# source('ms3Rtools.r')
+# source('ms3Rplots.r')
+# source('ms3Rstats.r')
+
+# TODO: load simulation results
+# load('data/sim_DDM/sim_DDM.Rdata')
+# load('data/sim_1SpredM/sim_1SpredM.Rdata')
+# load('data/sim_3SpredM/sim_3SpredM.Rdata')
+
+```

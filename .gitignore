@@ -1,0 +1,14 @@
+_book/
+_bookdown_files/
+knitr-figs-pdf/
+knitr-figs-docx/
+knitr-cache-pdf/
+knitr-cache-docx/
+*.log
+*.aux
+*.out
+*.tex
+.Rproj.user
+.Rhistory
+.RData
+.DS_Store

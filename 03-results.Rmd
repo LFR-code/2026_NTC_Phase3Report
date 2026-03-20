@@ -1,0 +1,117 @@
+# Results
+
+Results are presented for each operating model in turn,
+starting with the *SISCAH-DDM* operating model where the MP
+assumptions are well matched, followed by the
+*SISCAH-1S-Pred* and *SISCAH-3S-Pred* robustness tests.
+
+## Reference case: *SISCAH-DDM* operating model
+
+### Biological reference points
+
+Under the *SISCAH-DDM* operating model, the yield curve
+produces an unfished biomass of approximately 42 kt,
+$B_{MSY} \approx 17.35$ kt, a limit reference point of
+$0.3 B_0 \approx 13.5$ kt, and a maximum sustainable yield
+of approximately 1.6 kt. The LRP and $B_{MSY}$ are close
+together, meaning that the stock transitions relatively
+quickly from a productive state to one requiring closure.
+
+### MP performance
+
+When the MP is applied to the *SISCAH-DDM* operating model,
+performance is consistent with expectations given that the
+assessment model and OM share the same structural assumptions.
+The assessment model (*SISCAH-DIM*) estimates biomass
+reasonably well, with no major evidence of bias during the
+projection period. Median projected biomass remains well above
+$B_{ref} = B_{MSY|DDM}$, and biomass is maintained above the
+LRP approximately 75\% of the time. Commercial catches
+(split among roe fisheries) and SOK/FSC catches are at
+levels similar to the historical average. The effective
+harvest rates applied during the projection period are
+consistent with the intended HCR.
+
+## Robustness test: *SISCAH-1S-Pred* operating model
+
+Under the *SISCAH-1S-Pred* operating model, the MP produces
+lower catches across roe fisheries and FSC compared to the
+DDM reference case. Biomass starts lower and declines toward
+the $B_{ref} = B_{MSY|DDM}$ level, reflecting that the
+predation mortality model produces a lower equilibrium biomass
+($B_0 \approx 26.2$ kt) than the DDM model ($B_0 \approx
+42$ kt). Large recent spawn indices drive initial catches
+higher, but catches decline as the assessment model adjusts
+to the lower true biomass.
+
+The *SISCAH-DIM* assessment model used in the MP has more
+flexibility to chase high data points than would be ideal,
+leading to over-estimates of biomass for most of the
+projection period. This assessment model mis-specification is
+more problematic under the predation OM than under the DDM
+OM, as the DIM formulation lacks the structural constraint of
+density-dependent mortality. However, the flat biomass and
+indices in the projection period reduce the scale of
+over-estimates relatively quickly.
+
+Assessment errors translate to some over-harvesting near the
+$B_{ref}$ level, where the assessment model over-estimates
+biomass and opens the fishery when the true biomass is below
+the minimum escapement threshold. Despite this, lots of
+simulated outcomes show closures when $B > B_{ref}$,
+consistent with the lower true biomass under predation.
+
+## Robustness test: *SISCAH-3S-Pred* operating model
+
+### Aggregate performance
+
+Under the *SISCAH-3S-Pred* operating model, the aggregate
+WCVI biomass is near the minimum escapement reference point
+($B_{ref} = B_{MSY|DDM} \approx 17.35$ kt) at the start
+of the projection period. The aggregate unfished biomass
+under this OM is approximately 17.1 kt, meaning that the
+$B_{ref}$ threshold is essentially at the unfished level.
+As a result, the fishery is closed more than 50\% of the time,
+and catches are very small when the fishery is open.
+
+The largest catches occur in the first two projection years,
+driven by high recent spawn index values. After those initial
+years, the fishery remains mostly closed as the assessment
+model adjusts to the low biomass level.
+
+As with the *SISCAH-1S-Pred* OM, the DIM assessment model
+has more flexibility to track high data points, leading to
+some over-estimates. However, the flat biomass trajectory in
+the projection period limits the impact of these over-estimates.
+
+### Spatial TAC allocation
+
+Three allocation methods were tested for distributing the
+aggregate TAC among PFMAs (Section \@ref(sec:allocation)).
+The 2024 allocation proportions based on spawn indices are
+approximately 5\%, 38\%, and 57\% for PFMAs 25, 24, and 23,
+respectively, while long-term average proportions are
+approximately 11\%, 31\%, and 58\%. Catch-based proportions
+are approximately 25\%-30\% for PFMAs 25 and 24, and
+38\%-47\% for PFMA 23.
+
+### Performance by PFMA
+
+The probability of low biomass (biomass below the historical
+minimum) is very low across all PFMAs and allocation methods,
+ranging from 0\% to 0.2\%. This is because catches are
+negligible and biomass performance is driven almost entirely
+by natural and predation mortality rather than fishing.
+
+The probability of low catch (catch below the historical
+minimum) is high for all PFMAs and allocation methods,
+ranging from 71\% to 100\%. This reflects the near-permanent
+fishery closure under the *SISCAH-3S-Pred* OM.
+
+There is very little difference among allocation methods or
+among PFMAs in either performance metric. Given that catches
+are close to zero, the method used to distribute them has
+negligible impact on outcomes.
+
+<!-- TODO: Add tables and figures summarising simulation
+results when data objects are available -->
