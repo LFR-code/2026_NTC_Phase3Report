@@ -40,7 +40,7 @@ biomass levels.
 
 The divergence between operating models highlights the
 importance of the predation modelling work from earlier phases
-of this project [@doherty2024predation; @TODO_phase2].
+of this project [@doherty2024predation; @lfr2025_NTC].
 Including predation explicitly reduces the expected unfished
 biomass from approximately 42 kt (DDM) to approximately
 26 kt (1S-Pred) to approximately 17 kt (3S-Pred). Since the

@@ -17,7 +17,7 @@ areas.
 In the second year (Phase 2), modelling efforts expanded the
 suite of WCVI herring models to include predation mortality,
 spatial stock structure, and age-dependent egg production
-[@TODO_phase2]. Two models were developed: a three-stock
+[@lfr2025_NTC]. Two models were developed: a three-stock
 model (*SISCAH-3S-Pred*) fit to data for Pacific Fishery
 Management Areas (PFMAs) 23, 24, and 25, and a nine-stock
 simulation model (*SISCAH-9S-Pred*) calibrated from the
@@ -83,7 +83,7 @@ increasing ecological complexity:
    predation but retains a single-stock structure; and
 
 3. The *SISCAH-3S-Pred* three-stock model with predation
-   [@TODO_phase2], which adds both predation and spatial
+   [@lfr2025_NTC], which adds both predation and spatial
    stock structure.
 
 The *SISCAH-3S-Pred* model serves as a robustness test

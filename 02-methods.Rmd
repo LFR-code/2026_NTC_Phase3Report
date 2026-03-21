@@ -45,7 +45,7 @@ natural mortality when predation is included explicitly.
 ### *SISCAH-3S-Pred*: three-stock with predation {#sec:3SpredM}
 
 The *SISCAH-3S-Pred* model, developed in Phase 2 of this
-project [@TODO_phase2], splits the WCVI herring population
+project [@lfr2025_NTC], splits the WCVI herring population
 into three independent stocks corresponding to PFMAs 23, 24,
 and 25. Each stock is fit independently to PFMA-level catch,
 spawn index, and age composition data. Predation mortality
