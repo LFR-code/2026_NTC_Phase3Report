@@ -1,0 +1,3 @@
+[submodule "Models"]
+	path = Models
+	url = git@github.com:LFR-code/2026_NTC_Phase3Report-Models.git
