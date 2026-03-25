@@ -8,7 +8,7 @@
 
 - In 2024/25, population dynamics models were expanded to
   include spatial stock structure (three stocks corresponding
-  to PFMAs 23, 24, and 25), predation mortality from major
+  to Stat Areas 23, 24, and 25), predation mortality from major
   herring predators, and age-dependent egg production. The
   three-stock model with predation (*SISCAH-3S-Pred*) was
   recommended as the most practical tool for evaluating
@@ -20,7 +20,7 @@
   harvest control rule: (i) fit an aggregate single-stock
   assessment model to combined WCVI data and apply a minimum
   escapement rule to determine a coastwide total allowable
-  catch (TAC), and (ii) allocate the TAC among PFMAs based
+  catch (TAC), and (ii) allocate the TAC among Stat Areas based
   on recent spawn index proportions or other allocation
   methods.
 
@@ -55,7 +55,7 @@
 - We tested three spatial TAC allocation methods: (i) recent
   average spawn index proportions, (ii) recent average catch
   proportions, and (iii) allocating 100\% of the TAC to
-  PFMA 23 (Barkley Sound). Differences among allocation
+  Stat Area 23 (Barkley Sound). Differences among allocation
   methods were negligible under all operating models.
 
 ## Project Summary {-}

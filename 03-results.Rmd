@@ -32,6 +32,40 @@ levels similar to the historical average. The effective
 harvest rates applied during the projection period are
 consistent with the intended HCR.
 
+```{r fig-DDMprojections, fig.cap = capDDMprojections}
+capDDMprojections <- paste0(
+  "Simulation projections under the \\emph{SISCAH-DDM} operating model. ",
+  "Top: aggregate spawning biomass (kt) with 95\\% envelope (grey) and ",
+  "median (black line). Horizontal reference lines show $B_0$ (dotted), ",
+  "$B_{ref}$ (dashed blue), and LRP (dashed red). ",
+  "Middle: commercial catch by fleet. Bottom: SOK/FSC catch. ",
+  "Vertical dashed line marks the start of the projection period (2024).")
+plotSimProj(obj = simDDM)
+```
+
+```{r fig-DDMretro, fig.cap = capDDMretro}
+capDDMretro <- paste0(
+  "Retrospective spawning biomass fits under the \\emph{SISCAH-DDM} ",
+  "operating model for a single representative replicate. Red line: ",
+  "operating model true SSB. Blue line: final \\emph{SISCAH-DIM} ",
+  "assessment estimate. Grey lines: earlier assessment estimates. ",
+  "Points show scaled survey indices. Vertical dashed line marks ",
+  "the start of the projection period.")
+plotRetroFits(obj = simDDM, iRep = 1)
+```
+
+```{r fig-DDMhcrPhase, fig.cap = capDDMhcrPhase, fig.asp = 1.1}
+capDDMhcrPhase <- paste0(
+  "HCR scatter plot under the \\emph{SISCAH-DDM} operating model. ",
+  "Top: effective harvest rate ($U = \\text{TAC}/B$) vs true ",
+  "spawning biomass $B$ (kt). Bottom: TAC (kt) vs $B$. ",
+  "Solid line: HCR curve ($B_{ref} = 17.35$ kt, $U_{ref} = 8.47\\%$). ",
+  "Grey points: simulated outcomes across projection years and replicates. ",
+  "Dashed line indicates $B_{ref}$ (vertical); dotted line indicates ",
+  "$U_{ref}$ (horizontal).")
+plotHCRScatter(obj = simDDM)
+```
+
 ## Robustness test: *SISCAH-1S-Pred* operating model
 
 Under the *SISCAH-1S-Pred* operating model, the MP produces
@@ -61,6 +95,40 @@ the minimum escapement threshold. Despite this, lots of
 simulated outcomes show closures when $B > B_{ref}$,
 consistent with the lower true biomass under predation.
 
+```{r fig-1Sprojections, fig.cap = cap1Sprojections}
+cap1Sprojections <- paste0(
+  "Simulation projections under the \\emph{SISCAH-1S-Pred} operating model. ",
+  "Top: aggregate spawning biomass (kt) with 95\\% envelope (grey) and ",
+  "median (black line). Horizontal reference lines show $B_0$ (dotted), ",
+  "$B_{ref}$ (dashed blue), and LRP (dashed red). ",
+  "Middle: commercial catch by fleet. Bottom: SOK/FSC catch. ",
+  "Vertical dashed line marks the start of the projection period (2024).")
+plotSimProj(obj = sim1S)
+```
+
+```{r fig-1Sretro, fig.cap = cap1Sretro}
+cap1Sretro <- paste0(
+  "Retrospective spawning biomass fits under the \\emph{SISCAH-1S-Pred} ",
+  "operating model for a single representative replicate. Red line: ",
+  "operating model true SSB. Blue line: final \\emph{SISCAH-DIM} ",
+  "assessment estimate. Grey lines: earlier assessment estimates. ",
+  "Points show scaled survey indices. Vertical dashed line marks ",
+  "the start of the projection period.")
+plotRetroFits(obj = sim1S, iRep = 1)
+```
+
+```{r fig-1ShcrPhase, fig.cap = cap1ShcrPhase, fig.asp = 1.1}
+cap1ShcrPhase <- paste0(
+  "HCR scatter plot under the \\emph{SISCAH-1S-Pred} operating model. ",
+  "Top: effective harvest rate ($U = \\text{TAC}/B$) vs true ",
+  "spawning biomass $B$ (kt). Bottom: TAC (kt) vs $B$. ",
+  "Solid line: HCR curve ($B_{ref} = 17.35$ kt, $U_{ref} = 8.47\\%$). ",
+  "Grey points: simulated outcomes across projection years and replicates. ",
+  "Dashed line indicates $B_{ref}$ (vertical); dotted line indicates ",
+  "$U_{ref}$ (horizontal).")
+plotHCRScatter(obj = sim1S)
+```
+
 ## Robustness test: *SISCAH-3S-Pred* operating model
 
 ### Aggregate performance
@@ -84,34 +152,76 @@ has more flexibility to track high data points, leading to
 some over-estimates. However, the flat biomass trajectory in
 the projection period limits the impact of these over-estimates.
 
+```{r fig-3Sprojections, fig.cap = cap3Sprojections}
+cap3Sprojections <- paste0(
+  "Simulation projections under the \\emph{SISCAH-3S-Pred} operating ",
+  "model (SI allocation). ",
+  "Top: aggregate spawning biomass (kt) with 95\\% envelope (grey) and ",
+  "median (black line). Horizontal reference lines show $B_0$ (dotted), ",
+  "$B_{ref}$ (dashed blue), and LRP (dashed red). ",
+  "Middle: commercial catch by fleet. Bottom: SOK/FSC catch. ",
+  "Vertical dashed line marks the start of the projection period (2024).")
+plotSimProj(obj = sim3S_MP1)
+```
+
+```{r fig-3Sretro, fig.cap = cap3Sretro}
+cap3Sretro <- paste0(
+  "Retrospective spawning biomass fits under the \\emph{SISCAH-3S-Pred} ",
+  "operating model for a single representative replicate. Red line: ",
+  "operating model true SSB. Blue line: final \\emph{SISCAH-DIM} ",
+  "assessment estimate. Grey lines: earlier assessment estimates. ",
+  "Points show scaled survey indices. Vertical dashed line marks ",
+  "the start of the projection period.")
+plotRetroFits(obj = sim3S_MP1, iRep = 1)
+```
+
+```{r fig-3ShcrPhase, fig.cap = cap3ShcrPhase, fig.asp = 1.1}
+cap3ShcrPhase <- paste0(
+  "HCR scatter plot under the \\emph{SISCAH-3S-Pred} operating model. ",
+  "Top: effective harvest rate ($U = \\text{TAC}/B$) vs true ",
+  "spawning biomass $B$ (kt). Bottom: TAC (kt) vs $B$. ",
+  "Solid line: HCR curve ($B_{ref} = 17.35$ kt, $U_{ref} = 8.47\\%$). ",
+  "Grey points: simulated outcomes across projection years and replicates. ",
+  "Dashed line indicates $B_{ref}$ (vertical); dotted line indicates ",
+  "$U_{ref}$ (horizontal).")
+plotHCRScatter(obj = sim3S_MP1)
+```
+
 ### Spatial TAC allocation
 
 Three allocation methods were tested for distributing the
-aggregate TAC among PFMAs (Section \@ref(sec:allocation)).
+aggregate TAC among Stat Areas (Section \@ref(sec:allocation)).
 The 2024 allocation proportions based on spawn indices are
-approximately 5\%, 38\%, and 57\% for PFMAs 25, 24, and 23,
+approximately 5\%, 38\%, and 57\% for Stat Areas 25, 24, and 23,
 respectively, while long-term average proportions are
 approximately 11\%, 31\%, and 58\%. Catch-based proportions
-are approximately 25\%-30\% for PFMAs 25 and 24, and
-38\%-47\% for PFMA 23.
+are approximately 25\%-30\% for Stat Areas 25 and 24, and
+38\%-47\% for Stat Area 23.
 
-### Performance by PFMA
+```{r tab-allocProportions}
+makeAllocTable(mp1 = sim3S_MP1, mp2 = sim3S_MP2, mp3 = sim3S_MP3)
+```
+
+### Performance by Stat Area
 
 The probability of low biomass (biomass below the historical
-minimum) is very low across all PFMAs and allocation methods,
+minimum) is very low across all Stat Areas and allocation methods,
 ranging from 0\% to 0.2\%. This is because catches are
 negligible and biomass performance is driven almost entirely
 by natural and predation mortality rather than fishing.
 
 The probability of low catch (catch below the historical
-minimum) is high for all PFMAs and allocation methods,
+minimum) is high for all Stat Areas and allocation methods,
 ranging from 71\% to 100\%. This reflects the near-permanent
 fishery closure under the *SISCAH-3S-Pred* OM.
 
 There is very little difference among allocation methods or
-among PFMAs in either performance metric. Given that catches
+among Stat Areas in either performance metric. Given that catches
 are close to zero, the method used to distribute them has
 negligible impact on outcomes.
 
-<!-- TODO: Add tables and figures summarising simulation
-results when data objects are available -->
+```{r tab-perfMetrics, results = "asis"}
+perfTbls <- makePerfTables()
+print(perfTbls$biomass)
+print(perfTbls$catch)
+```

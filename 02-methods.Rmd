@@ -29,6 +29,15 @@ approximately 42 kt, $B_{MSY}$ is approximately 17.4 kt,
 the limit reference point (LRP) is $0.3 B_0 \approx 13.5$ kt,
 and the maximum sustainable yield is approximately 1.6 kt.
 
+```{r fig-yieldCurve, fig.cap = capYieldCurve}
+capYieldCurve <- paste0(
+  "Equilibrium yield curve for the \\emph{SISCAH-DDM} operating model, ",
+  "showing spawning biomass (kt) on the x-axis and equilibrium yield (kt) ",
+  "on the y-axis. Vertical dashed lines indicate key reference points: ",
+  "LRP ($0.3B_0$), $0.4B_{MSY}$, $0.8B_{MSY}$, $B_{MSY}$, and $B_0$.")
+knitr::include_graphics("figure/DDMyieldCurve.pdf")
+```
+
 ### *SISCAH-1S-Pred*: single-stock with predation
 
 The *SISCAH-1S-Pred* model treats WCVI herring as a single
@@ -46,11 +55,11 @@ natural mortality when predation is included explicitly.
 
 The *SISCAH-3S-Pred* model, developed in Phase 2 of this
 project [@lfr2025_NTC], splits the WCVI herring population
-into three independent stocks corresponding to PFMAs 23, 24,
-and 25. Each stock is fit independently to PFMA-level catch,
+into three independent stocks corresponding to Stat Areas 23, 24,
+and 25. Each stock is fit independently to Stat Area-level catch,
 spawn index, and age composition data. Predation mortality
 is included as in *SISCAH-1S-Pred*, with coast-wide predator
-consumption allocated among PFMAs in proportion to vulnerable
+consumption allocated among Stat Areas in proportion to vulnerable
 biomass.
 
 The aggregate unfished biomass under *SISCAH-3S-Pred* is
@@ -65,18 +74,28 @@ management procedure assumes a single stock creates a
 structural mismatch that tests the robustness of the MP to
 unrecognised spatial structure and predation.
 
+```{r fig-histSSB, fig.cap = capHistSSB, fig.asp = 0.65}
+capHistSSB <- paste0(
+  "Historical spawning biomass (kt) from all three operating models. ",
+  "Solid lines show aggregate SSB for \\emph{SISCAH-DDM} (black), ",
+  "\\emph{SISCAH-1S-Pred} (blue), and \\emph{SISCAH-3S-Pred} ",
+  "(red). Dashed lines show per-Stat Area SSB under \\emph{SISCAH-3S-Pred}. ",
+  "Horizontal lines indicate $B_0$ (dotted) and $B_{MSY|DDM}$ (dashed).")
+plotHistSSB(DDMfit = DDMfit, fit1S = fit1S, fit3S = fit3S)
+```
+
 ## Management procedure
 
 The management procedure consists of two steps: (i) an
 aggregate stock assessment that determines a coastwide TAC,
 and (ii) a spatial allocation step that distributes the TAC
-among PFMAs.
+among Stat Areas.
 
 ### Step 1: aggregate assessment and harvest control rule
 
-In the first step, data from all three PFMAs are aggregated
+In the first step, data from all three Stat Areas are aggregated
 into a single coastwide data set. Spawn indices are summed
-across PFMAs, catches are summed, and weight-at-age is
+across Stat Areas, catches are summed, and weight-at-age is
 averaged. A single-stock *SISCAH* assessment model with
 density-independent mortality (DIM) is then fit to the
 aggregated data to estimate current spawning biomass.
@@ -109,28 +128,38 @@ or below $B_{ref}$, the fishery is closed. When biomass
 exceeds $B_{ref}$, the TAC is the surplus above $B_{ref}$,
 up to a maximum harvest rate of $U_{ref}$.
 
+```{r fig-HCRdiagram, fig.cap = capHCRdiagram, fig.asp = 1.1}
+capHCRdiagram <- paste0(
+  "Minimum escapement harvest control rule. Upper panel: harvest rate ",
+  "$U_t$ as a function of assessed spawning biomass $\\hat{B}_t$. ",
+  "Lower panel: TAC as a function of $\\hat{B}_t$. The shaded region ",
+  "indicates the closed fishery ($\\hat{B}_t \\leq B_{ref}$). ",
+  "Parameters: $B_{ref} = 17.35$ kt, $U_{ref} = 8.5\\%$.")
+plotHCRDiagram(Bref = 17.35, Uref = 0.0847)
+```
+
 ### Step 2: spatial TAC allocation {#sec:allocation}
 
 In the second step, the aggregate TAC is distributed among
-PFMAs. Three allocation methods are tested:
+Stat Areas. Three allocation methods are tested:
 
 1. **Spawn index (SI) allocation**: the TAC is allocated in
    proportion to the average spawn index observed in each
-   PFMA over the most recent three years. This method uses
+   Stat Area over the most recent three years. This method uses
    the most current data on relative abundance to guide
    allocation.
 
 2. **Catch allocation**: the TAC is allocated in proportion
-   to the average catch taken in each PFMA over the most
+   to the average catch taken in each Stat Area over the most
    recent years with non-zero catches. This method reflects
    historical fishing patterns.
 
-3. **All PFMA 23 allocation**: the entire TAC is allocated to
-   PFMA 23 (Barkley Sound). This method represents a scenario
+3. **All Stat Area 23 allocation**: the entire TAC is allocated to
+   Stat Area 23 (Barkley Sound). This method represents a scenario
    where fishing is concentrated in a single area, which may
    reflect operational preferences or access considerations.
 
-Within each PFMA, the allocated TAC is further distributed
+Within each Stat Area, the allocated TAC is further distributed
 among commercial fleets (seine roe, gillnet, and spawn-on-kelp
 or bough) according to fixed fleet allocation proportions.
 
@@ -144,13 +173,13 @@ steps occur:
 
 1. The OM generates data (spawn indices with observation
    error, catch-at-age) from the true population state;
-2. The MP aggregates data across PFMAs and fits the
+2. The MP aggregates data across Stat Areas and fits the
    single-stock assessment model;
 3. The HCR determines the aggregate TAC based on
    estimated biomass;
-4. The TAC is allocated among PFMAs using the chosen
+4. The TAC is allocated among Stat Areas using the chosen
    allocation method;
-5. Catch is removed from each PFMA population in the OM;
+5. Catch is removed from each Stat Area population in the OM;
 6. The OM advances the population by one year, including
    recruitment, natural mortality, and predation.
 
@@ -161,19 +190,19 @@ posterior distributions to incorporate parameter uncertainty.
 
 ## Performance metrics
 
-Performance is evaluated using two metrics at the PFMA level,
+Performance is evaluated using two metrics at the Stat Area level,
 since no formal biological reference points exist for
-individual PFMAs:
+individual Stat Areas:
 
 1. **Probability of low biomass**: the proportion of
    projection years and replicates in which spawning biomass
-   in a given PFMA falls below its historical minimum
+   in a given Stat Area falls below its historical minimum
    observed biomass.
 
 2. **Probability of low catch**: the proportion of projection
-   years and replicates in which the catch from a given PFMA
+   years and replicates in which the catch from a given Stat Area
    falls below its historical minimum non-zero catch.
 
 These metrics provide a relative measure of how each
 allocation method affects the risk of poor outcomes at the
-PFMA level under each operating model.
+Stat Area level under each operating model.

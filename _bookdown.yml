@@ -7,3 +7,4 @@ rmd_files: ["index.Rmd",
             "04-discussion.Rmd",
             "05-references.Rmd"]
 delete_merged_file: true
+output_dir: "_book"

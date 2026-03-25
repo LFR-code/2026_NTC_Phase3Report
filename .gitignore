@@ -12,3 +12,5 @@ knitr-cache-docx/
 .Rhistory
 .RData
 .DS_Store
+
+*.Rproj

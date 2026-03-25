@@ -1,6 +1,6 @@
 .PHONY: pdf
 pdf:
-	Rscript -e "bookdown::render_book('index.Rmd')"
+	Rscript -e "bookdown::render_book('index.Rmd', output_format = 'bookdown::pdf_book')"
 
 .PHONY: check
 check:
@@ -14,4 +14,6 @@ check:
 
 .PHONY: clean
 clean:
-	rm -rf _book/ _bookdown_files/ *.log *.aux *.out *.tex
+	rm -rf _book/ _bookdown_files/ knitr-figs-pdf/ knitr-figs-docx/ \
+	  knitr-cache-pdf/ knitr-cache-docx/ *.log *.aux *.out *.tex \
+	  Rplots.pdf

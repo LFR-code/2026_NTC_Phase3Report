@@ -19,7 +19,7 @@ suite of WCVI herring models to include predation mortality,
 spatial stock structure, and age-dependent egg production
 [@lfr2025_NTC]. Two models were developed: a three-stock
 model (*SISCAH-3S-Pred*) fit to data for Pacific Fishery
-Management Areas (PFMAs) 23, 24, and 25, and a nine-stock
+Management Areas (Stat Areas) 23, 24, and 25, and a nine-stock
 simulation model (*SISCAH-9S-Pred*) calibrated from the
 three-stock model. Phase 2 concluded that the three-stock
 model is the most practical tool moving forward, as the
@@ -89,9 +89,9 @@ increasing ecological complexity:
 The *SISCAH-3S-Pred* model serves as a robustness test
 operating model. When the MP assumes a single panmictic stock
 but the true population is spatially structured, we can
-evaluate how well the MP protects individual PFMA stocks
+evaluate how well the MP protects individual Stat Area stocks
 and how spatial TAC allocation methods affect outcomes.
 We test three allocation methods for distributing the
-aggregate TAC among PFMAs: (i) proportional to recent spawn
+aggregate TAC among Stat Areas: (i) proportional to recent spawn
 indices, (ii) proportional to recent catches, and
-(iii) allocating the entire TAC to PFMA 23 (Barkley Sound).
+(iii) allocating the entire TAC to Stat Area 23 (Barkley Sound).

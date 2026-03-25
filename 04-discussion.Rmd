@@ -56,14 +56,14 @@ MP performance under any operating model tested. This is
 partly because catches are small or zero under the
 predation-based OMs, so the method used to distribute them
 is inconsequential. Even under the DDM OM where catches are
-larger, the allocation among PFMAs does not substantially
+larger, the allocation among Stat Areas does not substantially
 change overall conservation risk.
 
 This result does not mean that spatial allocation is
 unimportant in general. Under scenarios with higher
 productivity or lower predation mortality, the spatial
 distribution of catch could have meaningful effects on
-individual PFMA stocks, particularly if some PFMAs are less
+individual Stat Area stocks, particularly if some Stat Areas are less
 productive than others. The current results are specific to
 the operating models and reference points tested here.
 
@@ -112,12 +112,12 @@ uncertainty envelopes appear flat in some simulations,
 suggesting that the process error implementation may need
 refinement.
 
-**Movement among PFMAs**: the *SISCAH-3S-Pred* operating
-model treats the three PFMA stocks as independent, with no
+**Movement among Stat Areas**: the *SISCAH-3S-Pred* operating
+model treats the three Stat Area stocks as independent, with no
 movement of fish among areas. In reality, herring mix during
 the offshore feeding season and some level of exchange among
-PFMAs is likely. Including movement could change the
-effective productivity of individual PFMAs and alter the
+Stat Areas is likely. Including movement could change the
+effective productivity of individual Stat Areas and alter the
 impact of spatial allocation methods.
 
 **Predator dynamics**: future predator abundance is projected
@@ -130,7 +130,7 @@ productivity and the performance of harvest control rules.
 
 **Additional allocation methods**: only three allocation
 methods were tested. Other approaches, such as allocating
-proportional to estimated PFMA-level biomass from a spatial
+proportional to estimated Stat Area-level biomass from a spatial
 assessment model, or using adaptive allocation based on
 real-time monitoring, could be explored in future work.
 
