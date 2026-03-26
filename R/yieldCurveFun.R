@@ -3,26 +3,39 @@ plotRefPtsExpC <- function( empRefCurves = SOGempRefCurves,
                             histRpt = histRpts[[1]],
                             yrRange = yrRange,
                             sIdx = 1, pIdx = 1, qProbs,
-                            area = 'SoG')
+                            area = 'SoG',
+                            Bref = NULL )
 {
   
-  Dstar   <- histRpt$ctlList$hypo$Dstar - 1950
-  Dscalar <- histRpt$ctlList$hypo$Dscalar
-  SB_it   <- histRpt$posts$SB_ipt[,1,]
-  nMCMC   <- dim(SB_it)[1]
-  
-  Busr_i  <- apply(X = Dscalar*SB_it[,Dstar], FUN = mean, MARGIN = 1)
-  
   nReps <- dim(saveEmpRefCurves$C_isptk)[1]
-  # Get posterior samples to match the empirical ref curves
-  set.seed(1234)
-  
-  samples <- sample(1:nMCMC, size = nReps, replace = FALSE )
-  Busr_i  <- Busr_i[samples[1:nReps]]
-  USR_q  <- quantile(Busr_i, probs = qProbs )
-  
-  eqListQuant <- solveSimEqbriaQuant( empRefCurves = empRefCurves, yrRange = yrRange,
-                                      USR_q = USR_q, qProbs = qProbs )
+
+  # Compute USR from MCMC posteriors if available;
+  # otherwise use dummy USR (USR line is not plotted)
+  if (!is.null(histRpt$posts$SB_ipt)) {
+    Dstar   <- histRpt$ctlList$hypo$Dstar - 1950
+    Dscalar <- histRpt$ctlList$hypo$Dscalar
+    SB_it   <- histRpt$posts$SB_ipt[, 1, ]
+    nMCMC   <- dim(SB_it)[1]
+    Busr_i  <- apply(
+      X = Dscalar * SB_it[, Dstar],
+      FUN = mean, MARGIN = 1)
+    set.seed(1234)
+    samples <- sample(
+      x = seq_len(nMCMC),
+      size = nReps,
+      replace = FALSE)
+    Busr_i <- Busr_i[samples[seq_len(nReps)]]
+    USR_q  <- quantile(Busr_i, probs = qProbs)
+  } else {
+    # MLE fit: no posteriors, use zero USR
+    USR_q <- rep(0, length(qProbs))
+  }
+
+  eqListQuant <- solveSimEqbriaQuant(
+    empRefCurves = empRefCurves,
+    yrRange      = yrRange,
+    USR_q        = USR_q,
+    qProbs       = qProbs)
   
   # ref curves
   C_qk <- eqListQuant$C_qk
@@ -111,8 +124,18 @@ plotRefPtsExpC <- function( empRefCurves = SOGempRefCurves,
   box()
   # lines( x = B_qk[medIdx,1:maxUidx], y = Y_qk[medIdx,1:maxUidx], col = "black", lwd = 3, lty = 1)
   
-  fit <- smooth.spline(x = B_qk[medIdx,1:maxUidx], y = Y_qk[medIdx,1:maxUidx], nknots = 10)
-  lines(fit, col = "black", lwd = 3)
+  # Trim noisy high-harvest-rate tail where B < 1 kt
+  Braw <- B_qk[medIdx, 1:maxUidx]
+  Yraw <- Y_qk[medIdx, 1:maxUidx]
+  keep <- Braw > 1
+  Braw <- Braw[keep]
+  Yraw <- Yraw[keep]
+
+  # Fit spline directly on B vs Y with higher spar
+  fit <- smooth.spline(x = Braw, y = Yraw, spar = 0.7)
+  # Extend curve to origin
+  lines(x = c(0, fit$x), y = c(0, fit$y),
+        col = "black", lwd = 3)
   
   # B0
   points(x = empB0_q[2], y = predict(fit, empB0_q[2])$y, pch = 16, col = clrs[1], cex = 1.5)
@@ -176,11 +199,23 @@ plotRefPtsExpC <- function( empRefCurves = SOGempRefCurves,
   # }
   
   
+  # Bref from external SAR (if supplied)
+  if (!is.null(Bref)) {
+    segments(x0 = Bref, y0 = -1,
+             x1 = Bref,
+             y1 = predict(fit, Bref)$y, lty = 2)
+    points(x = Bref, y = predict(fit, Bref)$y,
+           pch = 16, col = clrs[6], cex = 1.5)
+    text(x = Bref - adjustpos, y = 0,
+         expression(B["ref | 2023 DDM CSAS"]),
+         pos = 4, srt = 90)
+  }
+
   mtext( side = 1, outer = TRUE, text = "Spawning Biomass (kt)",
          line = 2.5, font = 2, las = 0)
   mtext(side = 2, text = "Yield (kt)", line = 2.5, font = 2, las = 0)
-  
-  
+
+
 }# plotRefPtsExpC()
 
 solveSimEqbriaQuant <- function(  empRefCurves,
@@ -268,10 +303,11 @@ solveSimEqbriaQuant <- function(  empRefCurves,
     Useq <- seq(from = 0, to = U_qk[qq,maxUidx], length.out = 1000)
     Yseq <- YUspline(Useq,deriv = 1)
     
-    Ucrash <- try(optimize( interval = c(minUcrash,U_qk[qq,maxUidx]), f=YUspline, deriv=1))
+    Ucrash <- try(optimize( interval = c(minUcrash,U_qk[qq,maxUidx]), f=YUspline, deriv=1),
+                   silent = TRUE)
     
     
-    if( class(Ucrash) == "try-error"){
+    if( inherits(Ucrash, "try-error") ){
       Ucrash <- list()
       Ucrash$minimum <- 0
     }
@@ -288,7 +324,8 @@ solveSimEqbriaQuant <- function(  empRefCurves,
       
       newInt <- c(Useq[minUidx - 3], Useq[minUidx + 3])
       
-      Ucrash <- try(optimize( interval = newInt, f=YUspline, deriv=1))
+      Ucrash <- try(optimize( interval = newInt, f=YUspline, deriv=1),
+                     silent = TRUE)
       k <- k+1
       
       if(k == 4)
@@ -306,7 +343,8 @@ solveSimEqbriaQuant <- function(  empRefCurves,
       {
         Umsy  <- try(uniroot(   interval = c(minUmsy,Ucrash),
                                 f = YUspline,
-                                deriv = 1 )$root)
+                                deriv = 1 )$root,
+                     silent = TRUE)
         
       }
       else Umsy <- Ucrash
@@ -324,7 +362,8 @@ solveSimEqbriaQuant <- function(  empRefCurves,
         
         Umsy  <- try(uniroot( interval = newInt,
                               f = YUspline,
-                              deriv = 1 )$root)
+                              deriv = 1 )$root,
+                     silent = TRUE)
         k <- k+1
         
         if(k == 4)
@@ -338,14 +377,14 @@ solveSimEqbriaQuant <- function(  empRefCurves,
     if(USR_q[qq] < B_qk[qq,1])
       Uusr <- try(uniroot(  interval = c(0.0,Umsy),
                             f = BUSRspline,
-                            deriv = 0 )$root)
+                            deriv = 0 )$root,
+                   silent = TRUE)
     
-    if( class(Umsy) == "try-error")
+    if( inherits(Umsy, "try-error") )
       Umsy <- 0
     
-    if( class(Uusr) == "try-error")
+    if( inherits(Uusr, "try-error") )
     {
-      browser()
       Uusr <- 0
     }
     

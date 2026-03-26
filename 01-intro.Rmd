@@ -22,10 +22,14 @@ model (*SISCAH-3S-Pred*) fit to data for Pacific Fishery
 Management Areas (Stat Areas) 23, 24, and 25, and a nine-stock
 simulation model (*SISCAH-9S-Pred*) calibrated from the
 three-stock model. Phase 2 concluded that the three-stock
-model is the most practical tool moving forward, as the
-nine-stock model was largely insensitive to its additional
-spatial and temporal detail, reflecting analyst assumptions
-rather than inherent properties of the system.
+model is the most practical tool for MSE moving forward,
+as the nine-stock model was largely insensitive to its
+additional spatial and temporal detail, reflecting analyst
+assumptions rather than inherent properties of the system.
+The nine-stock model remains useful in an empirical
+capacity, similar to an exceptional circumstances
+framework, for monitoring spawn dynamics at finer spatial
+scales than the assessment model considers.
 
 The present working paper describes activities in the third
 year (Phase 3) of the project. Building on the Phase 2
@@ -41,8 +45,10 @@ opportunities for WCVI herring.
 
 WCVI herring commercial fisheries have been closed since 2006.
 A re-opening of the fishery would require a management
-procedure (MP) that defines how stock status is assessed and
-how a total allowable catch (TAC) is determined. Current BC
+procedure (MP) consistent with the DFO Precautionary
+Approach framework [@dfo2009pa] that defines how stock
+status is assessed and how a total allowable catch (TAC)
+is determined [@dfo2024_herringIFMP]. Current BC
 herring management procedures are developed and tested using
 single-stock operating models that treat WCVI herring as a
 panmictic population [@johnson2024SCAH; @DFO_2021a]. However,

@@ -25,17 +25,21 @@ Herring stock assessments [@johnson2024SCAH]. It treats WCVI
 herring as a single panmictic stock with density-dependent
 natural mortality, where natural mortality rates increase at
 low stock sizes. Under this model, unfished biomass is
-approximately 42 kt, $B_{MSY}$ is approximately 17.4 kt,
+approximately 42 kt, $B_{MSY}$ is approximately 17.35 kt,
 the limit reference point (LRP) is $0.3 B_0 \approx 13.5$ kt,
 and the maximum sustainable yield is approximately 1.6 kt.
 
 ```{r fig-yieldCurve, fig.cap = capYieldCurve}
 capYieldCurve <- paste0(
-  "Equilibrium yield curve for the \\emph{SISCAH-DDM} operating model, ",
-  "showing spawning biomass (kt) on the x-axis and equilibrium yield (kt) ",
-  "on the y-axis. Vertical dashed lines indicate key reference points: ",
-  "LRP ($0.3B_0$), $0.4B_{MSY}$, $0.8B_{MSY}$, $B_{MSY}$, and $B_0$.")
-knitr::include_graphics("figure/DDMyieldCurve.pdf")
+  "Simulation-based equilibrium yield curve for the \\emph{SISCAH-DDM} ",
+  "operating model, showing spawning biomass (kt) on the x-axis and ",
+  "equilibrium yield (kt) on the y-axis. Vertical dashed lines indicate ",
+  "key reference points: LRP ($0.3B_0$), $0.4B_{MSY}$, $0.8B_{MSY}$, ",
+  "$B_{MSY}$, $B_0$, and $B_{ref}$ (17.35 kt, from the 2023 CSAS review).")
+plotYieldCurve(
+  empRC   = saveEmpRefCurves,
+  histRpt = DDMfit,
+  Bref    = 17.35)
 ```
 
 ### *SISCAH-1S-Pred*: single-stock with predation
@@ -76,11 +80,13 @@ unrecognised spatial structure and predation.
 
 ```{r fig-histSSB, fig.cap = capHistSSB, fig.asp = 0.65}
 capHistSSB <- paste0(
-  "Historical spawning biomass (kt) from all three operating models. ",
-  "Solid lines show aggregate SSB for \\emph{SISCAH-DDM} (black), ",
-  "\\emph{SISCAH-1S-Pred} (blue), and \\emph{SISCAH-3S-Pred} ",
-  "(red). Dashed lines show per-Stat Area SSB under \\emph{SISCAH-3S-Pred}. ",
-  "Horizontal lines indicate $B_0$ (dotted) and $B_{MSY|DDM}$ (dashed).")
+  "Historical spawning biomass (kt) from all three operating ",
+  "models (1951--2023). Solid lines show aggregate SSB for ",
+  "\\emph{SISCAH-DDM} (black), \\emph{SISCAH-1S-Pred} (blue), ",
+  "and \\emph{SISCAH-3S-Pred} (red). Dashed lines show ",
+  "per-Stat Area SSB under \\emph{SISCAH-3S-Pred}. Horizontal ",
+  "dotted lines indicate equilibrium unfished biomass ($B_0$) ",
+  "for each OM, colour-coded to match.")
 plotHistSSB(DDMfit = DDMfit, fit1S = fit1S, fit3S = fit3S)
 ```
 
@@ -93,21 +99,28 @@ among Stat Areas.
 
 ### Step 1: aggregate assessment and harvest control rule
 
-In the first step, data from all three Stat Areas are aggregated
-into a single coastwide data set. Spawn indices are summed
-across Stat Areas, catches are summed, and weight-at-age is
-averaged. A single-stock *SISCAH* assessment model with
-density-independent mortality (DIM) is then fit to the
-aggregated data to estimate current spawning biomass.
+In the first step, data from all three Stat Areas are
+aggregated into a single coastwide data set. Spawn indices
+are summed across Stat Areas, catches are summed, and
+weight-at-age is averaged. A single-stock *SISCAH-DIM*
+(density-independent mortality) assessment model is then
+fit to the aggregated data to estimate current spawning
+biomass. The *SISCAH-DIM* model is the adopted assessment
+model for BC Herring stock assessment regions (SARs) that
+currently have management procedures and prosecute TACs.
 
 The harvest control rule (HCR) is a minimum escapement rule
 similar to the current DFO rule for BC herring. The rule has
 two parameters:
 
-- $B_{ref}$: the minimum escapement biomass, set equal to
-  $B_{MSY}$ from the *SISCAH-DDM* model (approximately
-  17.35 kt); and
-- $U_{ref}$: the maximum harvest rate, set at 8.5\%.
+- $B_{ref}$: a preliminary minimum escapement biomass
+  of approximately 17.35 kt, which is the $B_{MSY}$
+  value estimated in the 2023 CSAS research document 
+  where *SISCAH-DDM* was first published 
+  [@johnson2024SCAH]; and
+- $U_{ref}$: the maximum harvest rate of 8.47\%,
+   resulting from some preliminary tuning under 
+   the DDM OM.
 
 The HCR operates as follows:
 
@@ -134,7 +147,7 @@ capHCRdiagram <- paste0(
   "$U_t$ as a function of assessed spawning biomass $\\hat{B}_t$. ",
   "Lower panel: TAC as a function of $\\hat{B}_t$. The shaded region ",
   "indicates the closed fishery ($\\hat{B}_t \\leq B_{ref}$). ",
-  "Parameters: $B_{ref} = 17.35$ kt, $U_{ref} = 8.5\\%$.")
+  "Parameters: $B_{ref} = 17.35$ kt, $U_{ref} = 8.47\\%$.")
 plotHCRDiagram(Bref = 17.35, Uref = 0.0847)
 ```
 
@@ -166,43 +179,70 @@ or bough) according to fixed fleet allocation proportions.
 ## Simulation design
 
 Closed-loop simulations project the operating model forward
-from the end of the historical period (2024) for
-approximately 25 years under the management procedure
-described above. In each projection year, the following
-steps occur:
+from the end of the historical period (2023) for 10 years under 
+the management procedure described above. Simulations
+apply the following steps in each projection year
 
-1. The OM generates data (spawn indices with observation
-   error, catch-at-age) from the true population state;
-2. The MP aggregates data across Stat Areas and fits the
-   single-stock assessment model;
-3. The HCR determines the aggregate TAC based on
-   estimated biomass;
-4. The TAC is allocated among Stat Areas using the chosen
-   allocation method;
-5. Catch is removed from each Stat Area population in the OM;
-6. The OM advances the population by one year, including
+1. Simulate observational data from the true population state, 
+   including a simulated blended spawn index with randomised
+   dive/surface survey ratios and log-normal observation
+   errors parameterised from historical residuals, as well
+   as catch-at-age data. If in a spatial OM, aggregate 
+   observation data across statistical areas.
+2  Fit the single-stock SISCAH-DIM assessment model;
+3. Apply the harvest control rule to SISCAH-DIM estimates to 
+   derive aggregate TAC. If in a spatial OM, TAC is allocated 
+   among Stat Areas using the chosen allocation method;
+5. Remove catch from the simulated population (either WCVI scale
+   or individual statistical areas);
+6. Advance the OM population forward by one year, including
    recruitment, natural mortality, and predation.
 
 Simulations are repeated across 100 stochastic replicates
-to capture uncertainty in future recruitment and predator
-abundance. Operating model parameters are drawn from MCMC
-posterior distributions to incorporate parameter uncertainty.
+to capture uncertainty in future recruitment, basal mortality, 
+and predator abundance. Operating model parameters are fixed 
+at their maximum likelihood estimates (MLEs).
 
 ## Performance metrics
 
-Performance is evaluated using two metrics at the Stat Area level,
-since no formal biological reference points exist for
-individual Stat Areas:
+We evaluate performance at the WCVI SAR scale using metrics
+applied in other BC herring regions. Selected metrics include
+
+1. **pLRP**: the probability of maintaining spawning
+   biomass above the limit reference point ($0.3 B_0$).
+   The conservation objective requires pLRP $\geq$ 75\%
+   over three herring generations.
+
+2. **MAC10**: median average commercial catch over the first
+10 projection years.
+
+3. **MAS10**: median average spawn-on-bough catch over the
+first 10 projection years.
+
+4. **Openings**: Median number of years with fishery openings.
+
+5. **pViable**: The probability of catch being above 650 t.
+
+At the Stat Area level, there are no formal biological reference points 
+or objectives. Therefore, we define the following metrics for performance
+at the individual Stat Area level:
 
 1. **Probability of low biomass**: the proportion of
    projection years and replicates in which spawning biomass
    in a given Stat Area falls below its historical minimum
-   observed biomass.
+   observed biomass over the entire conditioning period
+   (1951--2024).
 
 2. **Probability of low catch**: the proportion of projection
-   years and replicates in which the catch from a given Stat Area
-   falls below its historical minimum non-zero catch.
+   years and replicates in which the catch from a given
+   Stat Area falls below its historical minimum non-zero
+   catch over the entire conditioning period (1951--2024).
 
 These metrics provide a relative measure of how each
 allocation method affects the risk of poor outcomes at the
-Stat Area level under each operating model.
+Stat Area level. Because formal Stat Area-level comparisons
+are only relevant under the spatially structured
+*SISCAH-3S-Pred* OM, these metrics are computed for the
+three-stock OM only. Aggregate performance under the
+single-stock OMs is evaluated qualitatively from simulation
+projection figures.

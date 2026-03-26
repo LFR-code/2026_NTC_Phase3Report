@@ -1,0 +1,469 @@
+
+\clearpage
+
+```{=latex}
+% Do not delete this
+
+\appendixpageoff
+\appendixtitleoff
+
+\begin{appendices}
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+```
+
+# SISCAH-3S-Pred predation mortality models {#app:threeStockPred}
+
+This appendix briefly describes the *SISCAH-3S-Pred*
+model. The *3S-Pred* model is fitted to WCVI Herring
+spawn index, catch, and catch-at-age data disaggregated
+to the Stat Area level, as well as coast-wide predator
+consumption estimates. The model is described over three
+tables, including notation
+(Table \ref{tab:SISCAnotation}), model parameters and
+process model equations
+(Table \ref{tab:SISCAprocModelEqns}), and statistical
+model equations broken into observation models, parameter
+priors, and the final model objective function
+(Table \ref{tab:SISCAstatModelEqns}). Other than the two
+changes described below, the model is the same as
+*SISCAH-1S-Pred* so we refer readers to
+@doherty2024predation for more information.
+
+There are two main changes in the specification and data
+used for the *SISCAH-3S-Pred* model from the
+*SISCAH-1S-Pred* model, and both are related to the way
+predators are treated. First, the Humpback Whale predator
+consumption is split into four seasonal feeding groups,
+rather than the two seasonal groups used in the original
+publication where *SISCAH-1S-Pred* is developed
+[@doherty2024predation]. Seasonal feeding groups are used
+to bring the relative consumption among seasons more in
+line with observations of Humpback abundance in the Juan
+de Fuca strait during survey effort
+[@mcmillan2022hbSeasonalAbundance].
+
+The second change is that bio-energetic predator
+consumption estimates are provided at a coastwide level,
+rather than the same Stat Area level as the herring
+populations. Finer spatial detail on bio-energetic
+estimates is not possible, as the consumption is estimated
+from models of predator abundance/biomass, and there are
+no data available to estimate predator populations at a
+finer scale than the WCVI coast. Therefore, predator
+consumption is provided to *SISCAH-3S-Pred* as a mixed
+coastwide consumption, which is then split among the three
+Stat Areas in proportion to the vulnerable biomass
+(Table \@ref(tab:SISCAprocModelEqns), M.1--M.3). This
+approach assumes that inshore predators split foraging
+effort among Stat Areas in proportion to prey
+availability, and offshore predators randomly remove
+herring from the mixed feeding aggregation.
+
+\clearpage
+
+
+## Tables
+
+```{r tableCapsA, echo = FALSE, include = FALSE, warning = FALSE}
+notationTableCap <- "Notation used in the SISCAH-3S-Pred stock assessment model including predation mortality."
+
+procModelEqnsCap  <- "Process model equations for the SISCAH-3S-Pred stock assessment model including predation mortality."
+
+statModelEqnsCap   <- "Data likelihoods, model prior density functions, and the final objective function for the SISCAH-3S-Pred stock assessment model including predation mortality. $\\mathbf{1}(X)$ is the indicator function that takes value 1 when the statement $X$ is true, and $0$ otherwise."
+```
+
+```{r SISCAnotation, echo = FALSE, message = FALSE, warnings = FALSE}
+
+options(knitr.kable.NA = "")
+
+notationTable <- tibble::tribble( 
+    ~Symbol,              ~Value,             ~Description,
+    "$T$",                "$73$",             "Total number of time steps 1951 - 2023",
+    NA,NA,NA,
+    "$A$",                "$10$",             "Plus group age-class",
+    NA,NA,NA,
+    "$t$",                "$1,2,\\dots,T$",   "Time step",
+    NA,NA,NA,
+    "$a$",                "$1,2,\\dots,A$",   "Age-class index",
+    NA,NA,NA,
+    "$p$",                "$1,2,3$",          "stock index for (1) PFMA25, (2) PFMA24, and (3) PFMA23.",
+    NA,NA,NA,
+    "$g$",                "$1,2,\\dots,14$",  "Gear index for (1) reduction, (2) seine-roe, and (3) gillnet fisheries,",
+    NA, NA,                                   "(4) Surface and (5) dive spawn survey indices, (6) the closed", 
+    NA, NA,                                   "pond SOKB fishery, (7) Hake less than 50 cm, (8) Hake greater",
+    NA, NA,                                   "than 50 cm, (9) Harbor Seals, (10) Stellar Sea Lions,",
+    NA, NA,                                   "(11) Winter Humpback Whale, (12) Spring Humpback Whale,",
+    NA, NA,                                   "(13) Summer Humpback Whale, and (14) Fall Humpback Whale.",
+    NA,NA,NA,
+    "$B_{0,p}$",            NA,               "Unfished spawning stock biomass in area $p$",
+    NA,NA,NA,
+    "$\\mbox{eggs}_{0,p}$",  NA,              "Equilibirum unfished egg production in area $p$",
+    NA,NA,NA,
+    "$\\mbox{eggs}_{p,t}$", NA,               "The number of eggs released by area $p$ spawners in year $t$",
+    NA,NA,NA,
+    "$h_p$",                NA,               "Beverton-Holt stock-recruitment steepness in area $p$",
+    NA,NA,NA,
+    "$R_{0,p}$",            NA,               "Unfished equilibrium recruitment in area $p$",
+    NA,NA,NA,
+    "$R^{init}_{p}$",         NA,             "Initial recruitment in area $p$",
+    NA,NA,NA,
+    "$\\bar{R_p}$",         NA,               "Average recruitment in area $p$",
+    NA,NA,NA,
+    "$\\omega^{init}_{a,p}$",NA,              "Initial recruitment log-deviations",
+    NA,NA,NA,
+    "$S_{a,p}$",            NA,               "Unfished equilibrium survivorship-at-age in area $p$",
+    NA,NA,NA,
+    "$\\beta_1,\\beta_2$","$20, 9.84$",       "Beta prior parameters for stock-recruit steepness",
+    NA,NA,NA,
+    "$\\phi_{0,p}$",        NA,               "Unfished equilibrium spawning biomass per recruit in area $p$",
+    NA,NA,NA,
+    "$\\omega_{p,t}$",      NA,               "Annual recruitment process error log-deviations in area $p$",
+    NA,NA,NA,
+    "$\\sigma_{R}$",      "$0.8$",            "Standard error of $\\omega_{p,t}$ recruitment deviations",
+    NA,NA,NA,
+    "$q_{s,p}$",            NA,               "Catchability coefficient for the surface survey design in area $p$",
+    NA,NA,NA,
+    "$q_{d}$",            "$1$",              "Catchability coefficient for the dive survey design",
+    NA,NA,NA,
+    "$q'_{p,t}$",           NA,               "Annual convex-combination of survey catchabilities in area $p$",
+    NA,NA,NA,
+    "$q^{pred}_{p,g,t}$",     NA,             "Per-capita predation rate for predator $g$ in area $p$",
+    NA,NA,NA,
+    "$E_{g,t}$",     NA,                      "Effort (abundance/biomass) for predator $g > 6$",
+    NA,NA,NA,
+    "$\\epsilon^{pred}_{p,g,t}$",     NA,       "Annual random walk $\\log$-deviations in per-capita",
+    NA,NA,                                    "predation rate for predator $g$ in area $p$",
+    NA,NA,NA,
+    "$\\sigma^{pred}$",   "$0.5$",            "Standard deviation for simple random walk in",
+    NA,NA,                                    "$\\log$ per-capita predation rate.",
+    NA,NA,NA,
+    "$\\mu_{q_s}$",      "$0.5$",             "Surface survey catchability $\\log$-Normal prior mean",
+    NA,NA,NA,
+    "$\\tau_{q_s}$",     "$0.5$",             "Surface survey catchability $\\log$-Normal prior standard deviation",
+    NA,NA,NA,
+    "$M_{p,t_{0}}$",        NA,               "Initial natural mortality rate in area $p$",
+    NA,NA,NA,
+    "$\\epsilon^{(M)}_{p,t}$",    NA,         "Annual $\\log$-deviations in natural mortality rate in area $p$",
+    NA,NA,NA,
+    "$\\sigma_{M}$",      "$.1$",             "Standard error in annual natural mortality log-deviations",
+    NA,NA,NA,
+    "$M_{a,p,t}$",          NA,               "Annual natural mortality rate for age $a$ in area $p$", 
+    NA,NA,NA,
+    "$w_{a,p,t}$",          NA,               "Annual average weight-at-age observations in area $p$",
+    NA,NA,NA,
+    "$m_a$",              NA,                 "Proportion mature at age $a$",
+    NA,NA,NA,
+    "$s^{50}_{p,g}$",       NA,               "Age-at-50\\% selectivity for gear/predator $g$ in area $p$",
+    NA,NA,NA,
+    "$s^{Step}_{p,g}$",     NA,               "Difference between age-at-50\\% and age-at-95\\% selectivity for",
+    NA,                   NA,                 "gear/predator $g$",
+    NA,NA,NA,
+    "$s_{a,p,g}$",        NA,                 "Selectivity-at-age $a$ for gear/predator $g$",
+    NA,NA,NA,
+    "$\\delta_g$",        NA,                 "Fractional time-step at which catch/consumption from",
+    NA,NA,                                    "fishery/predator $g$ is removed from the population",
+    NA,NA,NA,
+    "$R_{p,t}$",              NA,             "Estimated Age-1 recruitment in area $p$ at time $t$",
+    NA,NA,NA,
+    "$\\overline{R}_{p,t}$",       NA,        "Expected (deterministic) age-1 recruitment in area $p$",
+    NA,       NA,                             "from a Beverton-Holt stock-recruit relationship",
+    NA,NA,NA,
+    "$N_{a,p,t + \\delta_g}$",NA,             "Total numbers-at-age $a$ in area $p$ at fractional time-step $t + \\delta_g$",
+    NA,NA,NA,
+    "$N_{a,p,g,t + \\delta_g}$",NA,           "Total numbers-at-age $a$ in area $p$ vulnerable to fishery/predator $g$x",
+    NA,                   NA,                 "at fractional time-step $t + \\delta_g$",
+    NA,NA,NA,
+    "$N^{spawn}_{a,p,t}$",          NA,       "Total numbers-at-age $a$ in area $p$ in year $t$ at spawning time",
+    NA,NA,NA,
+    "$B_{p,t}$",            NA,               "Spawning biomass in area $p$ during year $t$",
+    NA,NA,NA,
+    "$C_{a,p,g,t}$",        NA,               "Model estimate of catch-/consumption-at-age $a$ in",
+    NA,NA,                                    "numbers by gear/predator $g$ in year $t$ in area $p$",
+    NA,NA,NA,
+    "$C'_{a,p,g,t}$",       NA,               "Model estimate of catch-/consumption-at-age $a$ in biomass",
+    NA,NA,                                    "units by gear/predator $g$ in area $p$, year $t$",
+    NA,NA,NA,
+    "$\\hat{C}_{p,g,t}$",   NA,               "Model estimate of catch-/consumption in biomass units by",
+    NA,NA,                                    "gear/predator $g$ in area $p$, year $t$",
+    NA,NA,NA,
+    "$C_{p,g,t}$",          NA,               "Input catch data or bio-energetic consumption estimates",
+    NA,NA,                                    "in biomass units by gear/predator $g$ in area $p$, year $t$",
+    NA,NA,NA,
+    "$\\hat{C}_{p,g,t}$",   NA,               "Model estimate of catch data or consumption in biomass units by",
+    NA,NA,                                    "gear/predator $g$ in area $p$, year $t$",
+    NA,NA,NA,
+    "$\\tau^C_g$",        NA,                 "$\\log$-Normal standard deviation of residual errors between",
+    NA,                   NA,                 "consumption estimates from bio-energetic model and SISCAH-3S-Pred",
+    NA,NA,NA,
+    "$U_{p,g,t}$",          NA,               "Harvest rate of herring in area $p$ by gear $g$ in year $t$",
+    NA,NA,NA,
+    "$K_{p,t}$",            NA,               "Total landed weight of Spawn-on-Kelp/Bough product at",
+    NA,NA,                                    "time $t$ in area $p$",
+    NA,NA,NA,
+    "$P_{p,t}$",            NA,               "Ponded whole-fish biomass for Spawn-on-Kelp/Bough",
+    NA,NA,                                    "fishery in area $p$, year $t$",
+    NA,NA,NA,
+    "$\\Psi_{t}$",        NA,                 "Conversion factor from ponded fish to landed SOKB",
+    NA,NA,NA,
+    "$\\mathfrak{F}_a$",    NA,               "Average fecundity at age $a$ of female herring",
+    NA,NA,                                    "(eggs per gram of spawning biomass)",
+    NA,NA,NA,
+    "$p_{mat,p,t}$",          NA,             "Proportion of herring that are mature at time $t$ in area $p$",
+    NA,NA,NA,
+    "$p_{fem,p,t}$",       "$0.5$",           "Proportion of herring that are female at time $t$ in area $p$",
+    NA,NA,NA,
+    "$p_{eff,p,t}$",       "$0.35$",          "Proportion of herring at time $t$ that will spawn in the closed pond in area $p$",
+    NA,NA,NA,
+    "$\\gamma_g$",       "$0.0024$",          "Conversion factor from eggs to SOKB product",
+    NA,NA,NA,
+    "$I_{p,t}$",           NA,                "Observed blended spawn index at time $t$ in area $p$",
+    NA,NA,NA,
+    "$\\hat{I}_{p,t}$",     NA,               "Expected blended spawn index at time $t$ in area $p$",
+    NA,NA,NA,
+    "$\\eta_{p,t}$",        NA,               "Proportion of annual spawn survey index",
+    NA,NA,                                    "observed in the surface survey design",
+    NA,NA,NA,
+    "$\\tau^{I}_{p,g}$",    NA,               "Surface ($g = s$) or dive ($g = d$) component of",
+    NA,NA,                                    "blended spawn index $\\log$ residual standard error in area $p$",
+    NA,NA,NA,
+    "$\\tau^{I}_{p,t}$",    NA,               "Yearly blended spawn-index $\\log$ residual standard error in area $p$",
+    NA,NA,NA,
+    "$u_{a,p,g,t}$",        NA,               "Observed proportion of catch-at-age $a$ by gear $g$",
+    NA,NA,                                    "at time $t$ in area $p$",
+    NA,NA,NA,
+    "$\\hat{u}_{a,p,g,t}$", NA,               "Expected proportion of catch-at-age $a$ by gear $g$",
+    NA,NA,                                    "at time $t$ in area $p$",
+    NA,NA,NA,
+    "$\\mathfrak{B}_{p,g,t}$",NA,             "Total number of age classes in year $t$ in area $p$ with",
+    NA,                     NA,               "proportion of catch-at-age observations above 2\\%",
+    NA,NA,                                    "of the total sample",
+    NA,NA,NA,
+    "$\\hat{\\tau}^{age}_{p,g}$", NA,         "Conditional maximum likelihood estimate",
+    NA,NA,                                    "of age composition sampling error",
+    NA,NA,NA,
+    "$m_{M}$",            "$0.45$",           "Prior mean initial natural mortality",
+    NA,NA,NA,
+    "$s_{M}$",            "$0.4$",            "$\\log$-scale standard deviation on initial mortality", 
+    NA,NA,NA,
+    "$m^{s^{50}}_{g}$",   NA,                 "Population mean age-at-50\\% selectivity for gear $g$",
+    NA,NA,NA,
+    "$s^{s^{50}}_{g}$",   "$0.3$",            "$\\log$-deviation of $s^{50}_g$ from $\\mu_{s^{50},g}$", 
+    NA,NA,NA,
+    "$m^{s^{Step}}_{g}$", NA,                 "Population mean step from age-at-50\\% to age-at-95\\%",
+    NA,NA,                                    "selectivity for gear $g$",
+    NA,NA,NA,
+    "$s^{s^{Step}}_{g}$", "$0.3$",            "$\\log$-deviation of $s^{Step}_g$ from $\\mu_{s^{Step},g}$", 
+    NA,NA,NA,
+    "$\\rho_g$",          NA,                 "Correlation-at-lag-1 in age composition residuals",
+    NA,NA,NA,
+    "$\\mathfrak{C}$",    NA,                 "Lag-1 correlation matrix for age composition residuals",
+    NA,NA,NA,
+    "$\\mathfrak{K}$",    NA,                 "Dimension transformation matrix for age composition",
+    NA,NA,                                    "logistic normal likelihood",
+    NA,NA,NA,
+    "$\\iota_{p,g,t}$",     NA,               "Centred logistic normal age-composition $\\log$-residuals",
+    NA,NA,                                    " for gear $g$ at time step $t$ in area $p$",
+
+)
+
+
+
+kable(  notationTable, escape = FALSE,
+        longtable = TRUE,
+        booktabs = TRUE, 
+        format = kable_format,
+        # linesep = "\\addlinespace",
+        caption = notationTableCap,
+        align = c("c","c","l")) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 10) 
+  #kable_styling(  latex_options = c("hold_position", "scale_down") )
+                  #bootstrap_options = c("striped", "hover","scale_down"))
+                  #font_size = 10 )
+
+
+```
+
+\clearpage
+
+\renewcommand{\arraystretch}{2}
+
+```{r SISCAprocModelEqns, echo = FALSE, messages = FALSE, warnings = FALSE}
+
+procModelEqns  <- read.csv("data/procModelEqns.csv", header = TRUE, stringsAsFactors = FALSE)
+
+# procModelEqns <- notationTable
+
+colnames(procModelEqns) <- c("No.", "Equation")
+
+kable( procModelEqns, escape = FALSE,
+                      booktabs = TRUE,
+                      format = kable_format,
+                      longtable = TRUE,
+                      linesep = "\\addlinespace",
+                      caption = procModelEqnsCap,
+                      align = c("c","l")) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 10) %>%
+  kableExtra::group_rows("Model Parameters", 1, 5 ) %>%
+  kableExtra::group_rows("Unfished Equilibrium States", 6, 10 ) %>%
+  kableExtra::group_rows("Non-equilibrium Initial States", 11, 13 ) %>%
+  kableExtra::group_rows("Natural, Fishing, and Total Mortality", 14, 17 ) %>%
+  kableExtra::group_rows("Catch from discrete fisheries (g = 1,2,3)", 18, 26 ) %>%
+  kableExtra::group_rows("Predator consumption (g > 6)", 27, 29 ) %>%
+  kableExtra::group_rows("Fertilised Herring egg removals (g = 6)", 30, 35 ) %>%
+  kableExtra::group_rows("Spawning Biomass, Recruitment, and Numbers-at-age", 36, 40 )
+
+```
+
+
+
+\clearpage
+
+```{r SISCAstatModelEqns, echo = FALSE, include = TRUE, messages = FALSE, warnings = FALSE}
+
+# statModelEqns  <- read.csv("data/statModelEqns.csv", header = TRUE, stringsAsFactors = FALSE)
+
+statModelEqns <- tibble::tribble( 
+
+  ~No.,        ~ModelEquation,
+  # Observation model equations
+  # Expected spawn indices
+  "(O.1)",      "$\\displaystyle \\hat{I}_{p,t}   = q'_{t} \\cdot B_{p,t}$",
+  # Expected age comps
+  "(O.2)",      "$\\displaystyle \\hat{u}_{a,p,g,t} = \\frac{ C_{a,p,g,t} } { \\sum_{a'} C_{a',p,g,t}}$",
+
+
+  # # Now calculate biomass observation resids
+  "(L.1)",      "$\\displaystyle z_{1,t} = \\log \\frac{ I_{t} }{ \\hat{I}_{t} }$",
+  "(L.2)",      "$\\displaystyle q'_{t} = \\eta_{t} q_{4} + (1 - \\eta_{t}) q_{5}$",
+  "(L.3)",      "$\\displaystyle \\tau^{I}_{t} = \\left( \\eta_{t} (\\tau^{I}_{4})^2 + (1 - \\eta_{t}) (\\tau^{I}_{5})^2\\right)^{1/2}$",
+  "(L.4)",      "$\\displaystyle Z_{1,t} = \\frac{z_{1,t}}{\\tau^{I}_t} $",
+  "(L.5)",      "$\\displaystyle l_{1} = \\frac12 \\sum_t \\left( \\log \\left(2\\pi(\\tau^{I}_t)^2\\right) + Z_{1,t}\\right)  $",
+
+  # Age composition likelihood
+  "(A.1)",      "$\\displaystyle \\mathfrak{C}_g = \\left[ \\rho_g^{j - i} \\right]_{i,j}$",
+  "(A.2)",      "$\\displaystyle \\mathfrak{K} = \\left[ I_{A-1} \\vert 1 \\right]$",
+  "(A.3)",      "$\\displaystyle V_g = \\mathfrak{K} \\cdot C_g \\cdot \\mathfrak{K}^T$",
+  "(A.4)",      "$\\displaystyle W_{p,g,t} = \\frac{ \\mbox{mean} ( {n^{Age}_{p,g,t}} ) }{ n^{Age}_{p,g,t} }$",
+  "(A.5)",      "$\\displaystyle \\mathfrak{B}_{p,g,t} = \\sum_{a = 1}^A \\mathbf{1}( u_{a,p,g,t} > 0.02)$",
+  "(A.6)",      "$\\displaystyle \\vec {\\iota}_{p,g,t} = \\langle log(u_{a,p,g,t} / u_{\\mathfrak{B}_{p,g,t},p,g,t}) - log(\\hat{u}_{a,p,g,t}/\\hat{u}_{\\mathfrak{B}_{p,g,t},p,g,t} \\rangle_{a,p}$",
+  "(A.7)",      "$\\displaystyle \\hat{\\tau}^{age}_{g} = \\left( \\frac{ \\sum_{t} \\frac{1}{W_{g,t}^2}(\\vec{\\iota}_{g,t})^T \\cdot V_g^{-1} \\cdot \\vec{\\iota}_{g,t}}{\\sum_{t} \\mathfrak{B}_{g,t} } \\right)^{0.5}$",
+  "(A.8)",      "$\\displaystyle l_{2} = \\sum_{g} \\left( \\sum_{a,p,t} \\log u_{a,p,g,t} + \\log \\hat{\\tau}^{age}_{g} \\sum_{p,t} (\\mathfrak{B}_{p,g,t} - 1) + \\frac12 \\sum_t \\log \\vert V_g \\vert + \\sum_{p,t} (\\mathfrak{B}_{p,g,t} - 1)\\log W_{p,g,t} \\right)$",
+
+  # Predator consumption likelihood function
+  "(Co.1)",     "$\\displaystyle z_{3,p,t} = \\frac{\\log \\hat{C}_{p,t} - \\log C_{p,t}}{\\tau^C_{p}}$",
+  "(Co.2)",     "$\\displaystyle l_3 = \\sum_{p,t} (\\log \\frac{1}{\\sqrt{2\\pi}} - \\frac{z_{3,p,t}^2}{2})$",
+
+# Blank line to push 'Process Error prior density functions to 2nd page '
+  "","",
+
+  # Process error priors
+  "(Pr.1)",      "$\\displaystyle p_{1} = \\sum_{t} (\\log \\frac{1}{\\sqrt{2\\pi}} - \\frac{\\omega_{t}^2}{2})$",
+  "(Pr.2)",      "$\\displaystyle p_{2} = \\sum_{a} \\left( \\log \\frac{1}{\\sqrt{2\\pi}} - \\frac{\\left(\\omega^{init}_{a}\\right)^2}{2} \\right)$",
+  "(Pr.3)",      "$\\displaystyle p_{3} = \\sum_{t} (\\frac{1}{\\sqrt{2\\pi}} - 0.5\\left(\\epsilon^{(M)}_{t}\\right)^2)$",
+
+  # Leading parameter priors
+  "(Pr.4)",      "$\\displaystyle p_{4} : M_{1951} \\sim \\log N(0.45,0.4)$",
+  "(Pr.5)",      "$\\displaystyle p_{5} : h \\sim \\beta(20,9.84)$",
+  "(Pr.6)",      "$\\displaystyle p_{6} : s^{50}_{p,g} \\sim \\log N(m^{s^{50}}_{g},s^{s^{50}}_{g})$",
+  "(Pr.7)",      "$\\displaystyle p_{7} : s^{Step}_{p,g} \\sim \\log N(m^{s^{Step}}_{g},s^{s^{Step}}_{g})$",
+  
+  # Other priors
+  "(Pr.8)",      "$\\displaystyle p_8 : q_s \\sim \\log N(0.5,0.5)$",
+  "(Pr.9)",      "$\\displaystyle p_9 : \\tau^2_g \\sim IG(2,0.27)$",
+  "(Pr.10)",     "$\\displaystyle p_{10} : \\log q^{pred}_{p,init} \\sim N(-4,-3)$",
+  "(Pr.11)",     "$\\displaystyle p_{11} : \\epsilon^{(pred)}_{p,t} \\sim N(0,1)$",
+  "(Pr.12)",     "$\\displaystyle p_{12} : \\psi_t \\sim \\log N(0.06,0.1)$",
+  "(Pr.13)",     "$\\displaystyle p_{13} = \\sum_{g = 1}^3 \\rho_g^2$",
+  "(Pr.14)",     "$\\displaystyle p_{14} = \\sum_{t} \\left( \\log \\frac{1}{\\sqrt{2\\pi}} - \\frac{\\left(\\log R_t - \\log \\hat{R}_t \\right)^2}{2\\sigma_R^2}\\right)$",
+  "(Pr.15)",     "$\\displaystyle p_{15} : -\\log B_0$",
+  "(Pr.16)",     "$\\displaystyle p_{16} = -\\log R_{bar}$",
+  "(Pr.17)",     "$\\displaystyle p_{17} = -\\log R_{init}$",
+
+
+  # Objective function
+  "(F.1)",       "$f = l_1 + l_2 +l_3 + \\sum_{j = 1}^{17} p_j $",
+)
+
+colnames(statModelEqns) <- c("No.", "Equation")
+
+kable( statModelEqns, escape = FALSE,
+                      booktabs = TRUE,
+                      format = kable_format,
+                      longtable = TRUE,
+                      caption = statModelEqnsCap,
+                      align = c("l","l")) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 10) %>%
+  kableExtra::group_rows("Observation model", 1, 2 ) %>%
+  kableExtra::group_rows("Spawn index data likelihood", 3, 7 ) %>%
+  kableExtra::group_rows("Age composition data likelihood", 8, 15 ) %>%
+  kableExtra::group_rows("Predator consumption likelihood", 16, 18 ) %>%
+  kableExtra::group_rows("Process error prior density functions", 19, 21 ) %>%
+  kableExtra::group_rows("Priors on other parameters", 22, 35 ) %>%
+  kableExtra::group_rows("Objective function (negative posterior density)", 36, 36 )
+
+
+
+
+
+```
+
+\renewcommand{\arraystretch}{1}
+
+\clearpage
+
+\blandscape
+
+## Figures
+
+```{r plotRPS, echo = FALSE, eval = FALSE, fig.cap =plotRPSCap, fig.width = 9, out.width = "6in"}
+plotRPSCap <- "Scaled recruits per spawner calculated by number of spawner, by spawning biomass, and by eggs in PFMA 25, PFMA 24, and PFMA 23."
+
+plotRpS_t(repList = fit3S)
+```
+\clearpage
+
+```{r plotRPS2, echo = FALSE, eval = FALSE, fig.cap =plotRPS2Cap, fig.width = 9, out.width = "8in"}
+plotRPS2Cap <- "percent difference in relative recruit per spawner in PFMA 25, PFMA 24, and PFMA 23."
+
+plotDiffRpS_t(repList = fit3S)
+```
+
+\clearpage
+
+```{r plotFAT, echo = FALSE, fig.cap = plotFATCap, out.width = "8in"}
+plotFATCap <- "Foraging arena theory (FAT) relationships between predation rate (top row) and predator density (x-axis), and per-capita predation rate (bottom row) fit to SISCAH MLE estimates (purple points) for SSL, hbWinter, hbSpring, hbSummer, and hbFall. The relationships are fixed across stocks."
+knitr::include_graphics(here::here(
+  "Models/Sims/sim_1SpredMOM_minEMP_full",
+  "simReport_files/figure-html",
+  "FATFRpredRate-1.png"))
+```
+
+\clearpage
+
+```{r plotPredConsump, echo = FALSE, fig.cap = plotPredConsumpCap, out.width = "8in"}
+plotPredConsumpCap <- "Estimated predator consumption of herring (kt) by predator group over the historical period."
+knitr::include_graphics(here::here(
+  "Models/Sims/sim_1SpredMOM_minEMP_full",
+  "simReport_files/figure-html",
+  "predConsump-1.png"))
+```
+
+\clearpage
+
+```{r plotPredMort, echo = FALSE, fig.cap = plotPredMortCap, out.width = "8in"}
+plotPredMortCap <- "Estimated predation mortality rate by predator group over the historical period."
+knitr::include_graphics(here::here(
+  "Models/Sims/sim_1SpredMOM_minEMP_full",
+  "simReport_files/figure-html",
+  "predMort-1.png"))
+```
+
+
+\elandscape
+
+\clearpage
+```{=latex}
+% Do not delete this
+\end{appendices}
+```

@@ -25,8 +25,9 @@ assessment model and OM share the same structural assumptions.
 The assessment model (*SISCAH-DIM*) estimates biomass
 reasonably well, with no major evidence of bias during the
 projection period. Median projected biomass remains well above
-$B_{ref} = B_{MSY|DDM}$, and biomass is maintained above the
-LRP approximately 75\% of the time. Commercial catches
+$B_{ref} = B_{MSY|DDM}$, and biomass is maintained above
+the LRP ($0.3 B_0$) approximately 96\% of the time,
+exceeding the 75\% conservation objective. Commercial catches
 (split among roe fisheries) and SOK/FSC catches are at
 levels similar to the historical average. The effective
 harvest rates applied during the projection period are
@@ -68,6 +69,8 @@ plotHCRScatter(obj = simDDM)
 
 ## Robustness test: *SISCAH-1S-Pred* operating model
 
+### MP performance
+
 Under the *SISCAH-1S-Pred* operating model, the MP produces
 lower catches across roe fisheries and FSC compared to the
 DDM reference case. Biomass starts lower and declines toward
@@ -91,30 +94,39 @@ over-estimates relatively quickly.
 Assessment errors translate to some over-harvesting near the
 $B_{ref}$ level, where the assessment model over-estimates
 biomass and opens the fishery when the true biomass is below
-the minimum escapement threshold. Despite this, lots of
-simulated outcomes show closures when $B > B_{ref}$,
-consistent with the lower true biomass under predation.
+the minimum escapement threshold. Despite this, a
+substantial proportion of simulated outcomes result in
+fishery closures even when true biomass exceeds $B_{ref}$,
+consistent with the lower equilibrium biomass under the
+predation OM.
 
-```{r fig-1Sprojections, fig.cap = cap1Sprojections}
+```{r fig-1Sprojections, fig.cap = cap1Sprojections, fig.asp = 1.0}
 cap1Sprojections <- paste0(
-  "Simulation projections under the \\emph{SISCAH-1S-Pred} operating model. ",
-  "Top: aggregate spawning biomass (kt) with 95\\% envelope (grey) and ",
-  "median (black line). Horizontal reference lines show $B_0$ (dotted), ",
-  "$B_{ref}$ (dashed blue), and LRP (dashed red). ",
-  "Middle: commercial catch by fleet. Bottom: SOK/FSC catch. ",
-  "Vertical dashed line marks the start of the projection period (2024).")
-plotSimProj(obj = sim1S)
+  "Simulation projections under the \\emph{SISCAH-1S-Pred} ",
+  "operating model. Top: spawning biomass (kt) with 95\\% ",
+  "envelope (grey) and median (black). Horizontal reference ",
+  "lines show $B_0$ (dotted), LRP (dashed red), and $B_{ref}$ ",
+  "(dashed green). Middle: commercial catch by fleet. Bottom: ",
+  "SOK/FSC catch.")
+knitr::include_graphics(here::here(
+  "Models/Sims/sim_1SpredMOM_minEMP_full",
+  "simReport_files/figure-html",
+  "plotMPSummaryArea-1.png"))
 ```
 
 ```{r fig-1Sretro, fig.cap = cap1Sretro}
 cap1Sretro <- paste0(
-  "Retrospective spawning biomass fits under the \\emph{SISCAH-1S-Pred} ",
-  "operating model for a single representative replicate. Red line: ",
-  "operating model true SSB. Blue line: final \\emph{SISCAH-DIM} ",
-  "assessment estimate. Grey lines: earlier assessment estimates. ",
-  "Points show scaled survey indices. Vertical dashed line marks ",
-  "the start of the projection period.")
-plotRetroFits(obj = sim1S, iRep = 1)
+  "Retrospective spawning biomass fits under the ",
+  "\\emph{SISCAH-1S-Pred} operating model for a single ",
+  "representative replicate. Red line: operating model ",
+  "true SSB. Blue line: final \\emph{SISCAH-DIM} assessment ",
+  "estimate. Grey lines: earlier assessment estimates. ",
+  "Points show scaled survey indices. Vertical dashed line ",
+  "marks the start of the projection period.")
+knitr::include_graphics(here::here(
+  "Models/Sims/sim_1SpredMOM_minEMP_full",
+  "simReport_files/figure-html",
+  "plotRetroSBagg-1.png"))
 ```
 
 ```{r fig-1ShcrPhase, fig.cap = cap1ShcrPhase, fig.asp = 1.1}
@@ -127,6 +139,15 @@ cap1ShcrPhase <- paste0(
   "Dashed line indicates $B_{ref}$ (vertical); dotted line indicates ",
   "$U_{ref}$ (horizontal).")
 plotHCRScatter(obj = sim1S)
+```
+
+### Comparison of single-stock OM performance
+
+Table \@ref(tab:tab-omStats) summarises aggregate
+performance under both single-stock operating models.
+
+```{r tab-omStats}
+makeOMStatsTable()
 ```
 
 ## Robustness test: *SISCAH-3S-Pred* operating model
@@ -152,16 +173,32 @@ has more flexibility to track high data points, leading to
 some over-estimates. However, the flat biomass trajectory in
 the projection period limits the impact of these over-estimates.
 
-```{r fig-3Sprojections, fig.cap = cap3Sprojections}
+```{r fig-3Sprojections, fig.cap = cap3Sprojections, fig.asp = 1.0}
 cap3Sprojections <- paste0(
-  "Simulation projections under the \\emph{SISCAH-3S-Pred} operating ",
-  "model (SI allocation). ",
-  "Top: aggregate spawning biomass (kt) with 95\\% envelope (grey) and ",
-  "median (black line). Horizontal reference lines show $B_0$ (dotted), ",
-  "$B_{ref}$ (dashed blue), and LRP (dashed red). ",
-  "Middle: commercial catch by fleet. Bottom: SOK/FSC catch. ",
-  "Vertical dashed line marks the start of the projection period (2024).")
-plotSimProj(obj = sim3S_MP1)
+  "Aggregate simulation projections under the ",
+  "\\emph{SISCAH-3S-Pred} operating model (SI allocation). ",
+  "Top: spawning biomass (kt) with aggregate envelope ",
+  "(grey) and per-Stat Area median lines (coloured). ",
+  "Middle: commercial catch by Stat Area. Bottom: ",
+  "SOK/FSC catch by Stat Area. Horizontal reference ",
+  "lines show $B_0$ (dotted), LRP (dashed red), and ",
+  "$B_{ref}$ (dashed green).")
+plotMPSummary(
+  obj       = sim3S_MP1,
+  aggregate = TRUE)
+```
+
+```{r fig-3SprojByArea, fig.cap = cap3SprojByArea, fig.asp = 1.0}
+cap3SprojByArea <- paste0(
+  "Per-Stat Area projections under the ",
+  "\\emph{SISCAH-3S-Pred} operating model (SI allocation). ",
+  "Columns show Stat Areas 25, 24, and 23. Rows show ",
+  "spawning biomass (kt), commercial catch by fleet (kt), ",
+  "and SOK/FSC catch (kt). Reference lines in SSB panels ",
+  "show per-area $B_0$ (dotted) and LRP (dashed red).")
+plotMPSummary(
+  obj       = sim3S_MP1,
+  aggregate = FALSE)
 ```
 
 ```{r fig-3Sretro, fig.cap = cap3Sretro}
@@ -172,7 +209,7 @@ cap3Sretro <- paste0(
   "assessment estimate. Grey lines: earlier assessment estimates. ",
   "Points show scaled survey indices. Vertical dashed line marks ",
   "the start of the projection period.")
-plotRetroFits(obj = sim3S_MP1, iRep = 1)
+plotRetroSBagg(obj = sim3S_MP1, iRep = 1)
 ```
 
 ```{r fig-3ShcrPhase, fig.cap = cap3ShcrPhase, fig.asp = 1.1}
@@ -196,7 +233,8 @@ approximately 5\%, 38\%, and 57\% for Stat Areas 25, 24, and 23,
 respectively, while long-term average proportions are
 approximately 11\%, 31\%, and 58\%. Catch-based proportions
 are approximately 25\%-30\% for Stat Areas 25 and 24, and
-38\%-47\% for Stat Area 23.
+38\%-47\% for Stat Area 23
+(Table \@ref(tab:tab-allocProportions)).
 
 ```{r tab-allocProportions}
 makeAllocTable(mp1 = sim3S_MP1, mp2 = sim3S_MP2, mp3 = sim3S_MP3)
@@ -220,8 +258,11 @@ among Stat Areas in either performance metric. Given that catches
 are close to zero, the method used to distribute them has
 negligible impact on outcomes.
 
-```{r tab-perfMetrics, results = "asis"}
+```{r tab-perfBiomass}
 perfTbls <- makePerfTables()
-print(perfTbls$biomass)
-print(perfTbls$catch)
+perfTbls$biomass
+```
+
+```{r tab-perfCatch}
+perfTbls$catch
 ```

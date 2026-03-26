@@ -5123,7 +5123,8 @@ plotTulipBt <- function(  obj = blob, nTrace = 3,
                           Ct  = FALSE,
                           leg = TRUE,
                           proj = FALSE,
-                          tMin = NULL )
+                          tMin = NULL,
+                          B0_p = NULL )
 {
   goodReps <- obj$goodReps
 
@@ -5230,8 +5231,9 @@ plotTulipBt <- function(  obj = blob, nTrace = 3,
 
   SB_qspt[SB_qspt == 0] <- NA
 
-  # grab B0 from history ref pts
-  B0_p <- obj$ctlList$opMod$repList$repOpt$refPts$refCurves$SBeq_pf[,1]
+  # grab B0 from history ref pts, unless supplied
+  if (is.null(B0_p))
+    B0_p <- obj$ctlList$opMod$repList$repOpt$refPts$refCurves$SBeq_pf[,1]
 
   if( is.null(traces))
     traces <- sample( 1:nReps, size = min(nTrace,nReps)  )
@@ -7299,14 +7301,29 @@ plotRetroSBagg <- function( obj = blob, iRep = 1, Ct = TRUE,
   retroSB_agg_tt[retroSB_agg_tt <= 0] <- NA
 
   # OM aggregate SSB for Herring (s=1), summed over PFMAs: dim [nT]
-  omSB_t  <- apply(obj$om$SB_ispt[iRep, 1, , ], 2, sum, na.rm = TRUE)
+  omSB_pt <- obj$om$SB_ispt[iRep, 1, , , drop = FALSE]
+  dim(omSB_pt) <- c(nP, nT)
+  omSB_t  <- colSums(omSB_pt)
   omSB_t[omSB_t == 0] <- NA
 
-  # Coastwide catch and TAC for Herring (s=1): sum over PFMAs and fleets
-  C_spft_1   <- obj$om$C_ispft[iRep, 1, , , ]   # [nP, nF, nT]
-  TAC_spft_1 <- obj$mp$hcr$TAC_ispft[iRep, 1, , , ] # [nP, nF, nT]
-  C_t        <- apply(C_spft_1,   3, sum, na.rm = TRUE) # [nT]
-  TAC_t      <- apply(TAC_spft_1, 3, sum, na.rm = TRUE) # [nT]
+  # Coastwide catch and TAC for Herring (s=1):
+  # fishing fleets only (exclude predators)
+  fishGears <- 1:3
+  sokGear   <- which(obj$om$fleetType_f == 2)
+  allFishF  <- c(fishGears, sokGear)
+
+  C_all     <- obj$om$C_ispft[iRep, 1, , , , drop = FALSE]
+  dim(C_all) <- c(nP, nF, nT)
+  C_fish    <- C_all[, allFishF, , drop = FALSE]
+  C_t       <- apply(X = C_fish, MARGIN = 3,
+                     FUN = sum, na.rm = TRUE)
+
+  TAC_all     <- obj$mp$hcr$TAC_ispft[iRep, 1, , , ,
+                                       drop = FALSE]
+  dim(TAC_all) <- c(nP, nF, nT)
+  TAC_fish    <- TAC_all[, allFishF, , drop = FALSE]
+  TAC_t       <- apply(X = TAC_fish, MARGIN = 3,
+                       FUN = sum, na.rm = TRUE)
 
   # Scaled indices: aggregated blended spawn index / combined q
   # Uses the index fleet and q from the final projection year's fit
@@ -8365,3 +8382,415 @@ plotSimEstDepM <- function( obj = blob, nB = 100,
 
 }
 
+plotMPSummary <- function( obj        = blob,
+                           commGears  = 1:3,
+                           sokGear    = 6,
+                           aggregate  = FALSE,
+                           showBref   = TRUE,
+                           nTrace     = 3,
+                           traces     = NULL,
+                           tMin       = NULL,
+                           areaColors = NULL,
+                           gearColors = NULL )
+{
+  goodReps   <- obj$goodReps
+  tMP        <- obj$om$tMP
+  nP         <- obj$om$nP
+  nT         <- obj$om$nT
+  fYear      <- obj$ctlList$opMod$fYear
+  yrs        <- seq(from = fYear, by = 1, length.out = nT)
+  stockNames  <- obj$om$stockNames
+  fleetNames  <- obj$ctlList$opMod$fleets
+
+  if(aggregate | nP == 1L)
+    stockNames <- "WCVI Herring"
+
+  # Aggregating a single spatial stock is a no-op; treat as per-area
+  if( nP == 1L )
+    aggregate <- FALSE
+
+  if( is.null(tMin) )
+    tMin <- 1
+
+  tPlotIdx <- tMin:nT
+
+  # Herring species index fixed at s = 1
+  sIdx      <- 1L
+  nGoodReps <- sum(goodReps)
+
+  # Always use drop = FALSE when subsetting arrays so that singleton
+  # dimensions (e.g. nP = 1) are never silently dropped.  Strip the
+  # fixed s dimension (always size 1 after sIdx selection) explicitly
+  # via dim<-, leaving [nReps, nP, nT].
+  SB_ipt      <- obj$om$endSB_ispt[goodReps, sIdx, , , drop = FALSE]
+  dim(SB_ipt) <- c(nGoodReps, nP, nT)
+  SB_ipt[SB_ipt == 0] <- NA
+
+  # Catch: [nReps, nP, nF, nT]
+  nF          <- dim(obj$om$C_ispft)[4L]
+  C_ipft      <- obj$om$C_ispft[goodReps, sIdx, , , , drop = FALSE]
+  dim(C_ipft) <- c(nGoodReps, nP, nF, nT)
+
+  nReps <- nGoodReps
+
+  # Reference points — one value per spatial patch (p)
+  B0_p <- obj$ctlList$opMod$histRpt$refPts$refCurves$SBeq_pf[, 1]
+  Bref <- obj$ctlList$mp$hcr$Bref_s[1]
+
+  if( is.null(traces) )
+    traces <- sample(seq_len(nReps), size = min(nTrace, nReps))
+
+  # Helper: get SB as [nReps, nT] for patch col or coastwide aggregate
+  getSB <- function( col )
+  {
+    if( aggregate )
+      apply(SB_ipt, c(1, 3), sum, na.rm = TRUE)
+    else
+      SB_ipt[, col, ]
+  }
+
+  # Helper: catch summed over gears → [nReps, nT] respecting aggregate flag
+  getC <- function( col, gears )
+  {
+    if( aggregate )
+    {
+      dat <- C_ipft[, , gears, , drop = FALSE]
+      apply(X = dat, MARGIN = c(1, 4), FUN = sum, na.rm = TRUE)
+    } else {
+      dat <- C_ipft[, col, gears, , drop = FALSE]
+      apply(X = dat, MARGIN = c(1, 4), FUN = sum, na.rm = TRUE)
+    }
+  }
+
+  # Helper: catch for a specific area (ignoring aggregate flag) → [nReps, nT]
+  getC_area <- function( area, gears )
+  {
+    dat <- C_ipft[, area, gears, , drop = FALSE]
+    apply(X = dat, MARGIN = c(1, 4), FUN = sum, na.rm = TRUE)
+  }
+
+  # Helper: draw stacked bars from a [nGroups, nT] matrix of medians.
+  # Uses yrs and tPlotIdx from the enclosing scope.
+  plotStackedBars <- function( meds_gt, gColors )
+  {
+    nGroups <- nrow(meds_gt)
+    bottom  <- rep(0, length(tPlotIdx))
+    for( g in seq_len(nGroups) )
+    {
+      tops <- bottom + pmax(meds_gt[g, tPlotIdx], 0, na.rm = TRUE)
+      rect( xleft   = yrs[tPlotIdx] - 0.3,
+            xright  = yrs[tPlotIdx] + 0.3,
+            ybottom = bottom,
+            ytop    = tops,
+            col     = gColors[g], border = NA )
+      bottom <- tops
+    }
+  }
+
+  # Safe per-area labels: stockNames may be NULL or shorter than nP.
+  # Default to PFMA names (25 = index 1, 24 = index 2, 23 = index 3).
+  defAreaLabels <- paste0("PFMA ", c(25, 24, 23))[1:nP]
+  areaLabels    <- if( !is.null(stockNames) && length(stockNames) >= nP )
+                     stockNames[1:nP]
+                   else
+                     defAreaLabels
+
+  nCol     <- if( aggregate ) 1L else nP
+  colNames <- if( aggregate ) "WCVI Aggregate" else areaLabels
+
+  # Default colours — distinct palettes for areas vs fleets so the two
+  # groupings are always visually separable across all plot rows.
+  defAreaColors <- c("steelblue3", "darkorange2", "forestgreen",
+                     "mediumpurple3", "goldenrod2")
+  defGearColors <- c("grey35", "coral3", "darkseagreen4",
+                     "sienna3", "orchid4")
+  if( is.null(areaColors) )
+    areaColors <- defAreaColors[1:nP]
+  if( is.null(gearColors) )
+    gearColors <- defGearColors[seq_along(commGears)]
+
+  stamp <- paste(obj$ctlList$ctl$scenarioName, ":",
+                 obj$ctlList$ctl$mpName, sep = "")
+
+  par( mfrow = c(3L, nCol),
+       oma  = c(4, 5, 3, 1),
+       mar  = c(0.3, 0.3, 0.8, 0.3),
+       mgp  = c(2.5, 0.6, 0) )
+
+  commLabel  <- paste0("Gears ", paste(commGears, collapse = ", "))
+  showAggRef <- aggregate || nP == 1L
+
+  # Pre-compute shared y-axis limits across all columns for each row
+  # so that panels within a row are on the same scale.
+  yMaxSB   <- 0
+  yMaxComm <- 0
+  yMaxSOK  <- 0
+  for( col in 1:nCol )
+  {
+    B0_col  <- if( aggregate ) sum(B0_p) else B0_p[col]
+    LRP_col <- 0.3 * B0_col
+    refVals <- if( showAggRef ) c(B0_col, LRP_col, Bref)
+               else             c(B0_col, LRP_col)
+
+    SB_it    <- getSB(col)
+    SB_qt    <- apply(X     = SB_it, MARGIN = 2, FUN = quantile,
+                      probs = c(0.025, 0.5, 0.975), na.rm = TRUE)
+    yMaxSB   <- max(yMaxSB, SB_qt[3, tPlotIdx], refVals, na.rm = TRUE)
+
+    Cc_it    <- getC(col = col, gears = commGears)
+    Cc_qt    <- apply(X     = Cc_it, MARGIN = 2, FUN = quantile,
+                      probs = c(0.025, 0.5, 0.975), na.rm = TRUE)
+    yMaxComm <- max(yMaxComm, Cc_qt[3, tPlotIdx], na.rm = TRUE)
+
+    # SOK catch is small; use 95th percentile so open-fishery years
+    # are visible even when most replicates have zero catch.
+    Cs_it   <- getC(col = col, gears = sokGear)
+    Cs_q95  <- apply(X     = Cs_it,
+                     MARGIN = 2,
+                     FUN   = quantile, probs = 0.95, na.rm = TRUE)
+    yMaxSOK <- max(yMaxSOK, Cs_q95[tPlotIdx], na.rm = TRUE)
+  }
+  yMaxSB   <- ifelse(is.finite(yMaxSB), yMaxSB * 1.05, 1)
+  yMaxComm <- ifelse(is.finite(yMaxComm), yMaxComm * 1.05, 1)
+  yMaxSOK  <- ifelse(is.finite(yMaxSOK),yMaxSOK * 1.05, 0.1 )
+
+  # ----------------------------------------------------------------
+  # Row 1: Spawning Biomass
+  # ----------------------------------------------------------------
+  for( col in 1:nCol )
+  {
+    SB_it  <- getSB(col)
+    SB_qt  <- apply(X     = SB_it, MARGIN = 2, FUN = quantile,
+                    probs = c(0.025, 0.5, 0.975), na.rm = TRUE)
+    B0_ref <- if( aggregate ) sum(B0_p) else B0_p[col]
+    LRP    <- 0.3 * B0_ref
+
+    plot( x    = range(yrs[tPlotIdx]),
+          y    = c(0, yMaxSB),
+          type = "n", las = 1, xaxt = "n", yaxt = "n",
+          xlab = "", ylab = "" )
+
+    mfg <- par("mfg")
+    if( mfg[2] == 1 )
+    {
+      axis( side = 2, las = 1 )
+      mtext( side = 2, text = "SSB (kt)",
+              line = 3, las = 0 )
+
+    }
+
+    mtext( side = 3, text = colNames[col], font = 2, line = 0.2 )
+    grid()
+    box()
+
+    polygon( x      = c(yrs[tPlotIdx], rev(yrs[tPlotIdx])),
+             y      = c(SB_qt[1, tPlotIdx], rev(SB_qt[3, tPlotIdx])),
+             col    = "grey65", border = NA )
+    lines( x = yrs[tPlotIdx], y = SB_qt[2, tPlotIdx], lwd = 2.5 )
+
+    for( tIdx in traces )
+      lines( x = yrs[tPlotIdx], y = SB_it[tIdx, tPlotIdx],
+             lwd = 0.6 )
+
+    abline( v = yrs[tMP], col = "grey30",  lty = 3 )
+    abline( h = B0_ref,   col = "grey50",  lty = 3, lwd = 2 )
+
+    if( showBref )
+    {
+      abline( h = LRP,  col = "red",       lty = 2, lwd = 2 )
+      if( showAggRef )
+        abline( h = Bref, col = "darkgreen", lty = 2, lwd = 2 )
+    }
+
+    # When aggregating, overlay per-area median SB lines in area colours
+    if( aggregate )
+    {
+      for( p in 1:nP )
+      {
+        sb_med <- apply(X      = SB_ipt[, p, ],
+                        MARGIN = 2,
+                        FUN    = median, na.rm = TRUE)
+        lines( x   = yrs[tPlotIdx],
+               y   = sb_med[tPlotIdx],
+               col = areaColors[p], lwd = 1.5, lty = 1 )
+      }
+    }
+
+    # Legend in the rightmost column: SB trajectories + reference lines
+    if( col == nCol )
+    {
+      leg_lab <- character(0)
+      leg_col <- character(0)
+      leg_lty <- numeric(0)
+      leg_lwd <- numeric(0)
+
+      if( aggregate )
+      {
+        leg_lab <- c(leg_lab, "WCVI Aggregate", areaLabels)
+        leg_col <- c(leg_col, "black",     areaColors)
+        leg_lty <- c(leg_lty, 1,           rep(1, nP))
+        leg_lwd <- c(leg_lwd, 2.5,         rep(1.5, nP))
+      }
+
+      leg_lab <- c(leg_lab, "B0")
+      leg_col <- c(leg_col, "grey50")
+      leg_lty <- c(leg_lty, 3)
+      leg_lwd <- c(leg_lwd, 2)
+
+      if( showBref )
+      {
+        leg_lab <- c(leg_lab, "LRP (0.3B0)")
+        leg_col <- c(leg_col, "red")
+        leg_lty <- c(leg_lty, 2)
+        leg_lwd <- c(leg_lwd, 2)
+
+        if( showAggRef )
+        {
+          leg_lab <- c(leg_lab, "Bref")
+          leg_col <- c(leg_col, "darkgreen")
+          leg_lty <- c(leg_lty, 2)
+          leg_lwd <- c(leg_lwd, 2)
+        }
+      }
+
+      legend( "topright",
+              legend = leg_lab, col = leg_col,
+              lty    = leg_lty, lwd = leg_lwd,
+              bty    = "n", cex = 1.0 )
+    }
+  }
+
+  # ----------------------------------------------------------------
+  # Row 2: Commercial Catch — stacked by gear (!aggregate) or area (aggregate)
+  # ----------------------------------------------------------------
+  for( col in 1:nCol )
+  {
+    # Total catch for 95% whiskers on projection years
+    C_tot_it <- getC(col = col, gears = commGears)
+    C_tot_qt <- apply(X     = C_tot_it, MARGIN = 2, FUN = quantile,
+                      probs = c(0.025, 0.5, 0.975), na.rm = TRUE)
+
+    plot( x    = range(yrs[tPlotIdx]),
+          y    = c(0, yMaxComm), 
+          type = "n", las = 1, xaxt = "n", yaxt = "n",
+          xlab = "", ylab = "" )
+
+    mfg <- par("mfg")
+    if( mfg[2] == 1 )
+    {
+      axis( side = 2, las = 1 )
+      mtext(  side = 2, 
+              text = paste0("Commercial catch (kt)"),
+              line = 3, las = 0 )
+
+    }
+
+    grid()
+    box()
+
+    if( aggregate )
+    {
+      # Stacked by area: one colour per spatial patch
+      meds_gt <- do.call(rbind, lapply(
+        X   = 1:nP,
+        FUN = function(p)
+          apply(X      = getC_area(area = p, gears = commGears),
+                MARGIN = 2, FUN = median, na.rm = TRUE) ))
+      plotStackedBars(meds_gt = meds_gt, gColors = areaColors)
+    } else {
+      # Stacked by gear: one colour per commercial gear
+      meds_gt <- do.call(rbind, lapply(
+        X   = commGears,
+        FUN = function(g)
+          apply(X      = getC_area(area = col, gears = g),
+                MARGIN = 2, FUN = median, na.rm = TRUE) ))
+      plotStackedBars(meds_gt = meds_gt, gColors = gearColors)
+    }
+
+    segments( x0  = yrs[tMP:nT], x1 = yrs[tMP:nT],
+              y0  = C_tot_qt[1, tMP:nT],
+              y1  = C_tot_qt[3, tMP:nT],
+              col = "black", lwd = 0.8 )
+
+    abline( v = yrs[tMP], col = "grey30", lty = 3 )
+
+    # Legend in the rightmost column panel
+    if( col == nCol )
+    {
+      if( aggregate )
+        legend( "topright",
+                legend = areaLabels,
+                fill   = areaColors,
+                bty    = "n", cex = 1.0 )
+      else
+        legend( "topright",
+                legend = fleetNames[commGears],
+                fill   = gearColors,
+                bty    = "n", cex = 1.0 )
+    }
+  }
+
+  
+  # ----------------------------------------------------------------
+  # Row 3: SOK / FSC — stacked by area when aggregate, single colour otherwise
+  # ----------------------------------------------------------------
+  for( col in 1:nCol )
+  {
+    # Total SOK for 95% whiskers
+    C_tot_it <- getC(col = col, gears = sokGear)
+    C_tot_qt <- apply(X     = C_tot_it, MARGIN = 2, FUN = quantile,
+                      probs = c(0.025, 0.5, 0.975), na.rm = TRUE)
+
+    plot( x    = range(yrs[tPlotIdx]),
+          y    = c(0, yMaxSOK),
+          type = "n", las = 1, yaxt = "n",
+          xlab = "", ylab = "" )
+
+    mfg <- par("mfg")
+    if( mfg[2] == 1 )
+    {
+      axis( side = 2, las = 1 )
+      mtext( side = 2, text = "SOK/FSC (kt)",
+         line = 3, las = 0 )
+
+    }
+
+    grid()
+    box()
+
+    if( aggregate )
+    {
+      # Stacked by area in area colours
+      meds_gt <- do.call(rbind, lapply(
+        X   = 1:nP,
+        FUN = function(p)
+          apply(X      = getC_area(area = p, gears = sokGear),
+                MARGIN = 2, FUN = median, na.rm = TRUE) ))
+      plotStackedBars(meds_gt = meds_gt, gColors = areaColors)
+    } else {
+      # Single area, single colour
+      meds_gt <- matrix(
+        apply(X      = getC_area(area = col, gears = sokGear),
+              MARGIN = 2, FUN = median, na.rm = TRUE),
+        nrow = 1)
+      plotStackedBars(
+        meds_gt = meds_gt,
+        gColors = adjustcolor("steelblue", alpha.f = 0.7))
+    }
+
+    segments( x0  = yrs[tMP:nT], x1 = yrs[tMP:nT],
+              y0  = C_tot_qt[1, tMP:nT],
+              y1  = C_tot_qt[3, tMP:nT],
+              col = "black", lwd = 0.8 )
+
+    abline( v = yrs[tMP], col = "grey30", lty = 3 )
+  }
+
+
+  mtext( side = 1, outer = TRUE, text = "Year", line = 2.5 )
+
+  mtext( outer = TRUE, side = 1, adj = 0.9,
+         line = 3.5, cex = 0.6,
+         text = stamp, col = "grey60" )
+
+} # END plotMPSummary()

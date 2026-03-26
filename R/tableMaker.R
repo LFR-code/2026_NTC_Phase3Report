@@ -178,3 +178,66 @@ makePerfTables <- function(
 
   list(biomass = tbl1, catch = tbl2)
 } # END makePerfTables()
+
+
+# makeOMStatsTable()
+# Reads DDM and 1S-predM stats CSVs and produces a
+# combined performance summary table.
+makeOMStatsTable <- function(
+    ddmFile = here::here(
+      'Models/Sims/sim_DDM_OM-SISCA_DIM_minE0847_MP',
+      'DDMstats.csv'),
+    predMFile = here::here(
+      'Models/Sims/sim_1SpredMOM_minEMP_full',
+      'oneStockPredMStats.csv')
+)
+{
+  ddm  <- read.csv(file = ddmFile, stringsAsFactors = FALSE)
+  p1s  <- read.csv(file = predMFile, stringsAsFactors = FALSE)
+
+  fmt_pct <- function(x) paste0(round(x * 100, 0), "\\%")
+  fmt_t   <- function(x) format(round(x, 0), big.mark = ",")
+
+  df <- data.frame(
+    Metric = c(
+      "pLRP: P($B > 0.3 B_0$)",
+      "MAC10 (t)",
+      "MAS10 (t)",
+      "Openings (of 10 yrs)",
+      "pViable: P($C > 650$ t)"),
+    DDM = c(
+      fmt_pct(ddm$pBtGt.3B0),
+      fmt_t(ddm$avgCatch_t),
+      fmt_t(ddm$avgSOK_t),
+      as.character(ddm$nYrsComm),
+      fmt_pct(ddm$pCtGt650t)),
+    "1S-predM" = c(
+      fmt_pct(p1s$pBtGt.3B0),
+      fmt_t(p1s$avgCatch_t),
+      fmt_t(p1s$avgSOK_t),
+      as.character(p1s$nYrsComm),
+      fmt_pct(p1s$pCtGt650t)),
+    stringsAsFactors = FALSE,
+    check.names = FALSE
+  )
+
+  kableExtra::kbl(
+    x        = df,
+    format   = "latex",
+    booktabs = TRUE,
+    escape   = FALSE,
+    col.names = c("Metric",
+                   "SISCAH-DDM",
+                   "SISCAH-1S-Pred"),
+    caption  = paste0(
+      "Aggregate performance metrics under the ",
+      "\\emph{SISCAH-DDM} and \\emph{SISCAH-1S-Pred} ",
+      "operating models. LRP is $0.3 B_0$ where $B_0$ ",
+      "is the OM-specific unfished biomass. ",
+      "CO1 threshold is 75\\%.")
+  ) |>
+    kableExtra::kable_styling(
+      latex_options = c("hold_position"),
+      font_size     = 10
+    )
+} # END makeOMStatsTable()

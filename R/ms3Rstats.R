@@ -316,7 +316,8 @@ makeStatTable <- function( sims = 1, folder = "", ... )
 # inputs:   sim=int indicating which simulation to compute stats for
 # outputs:  statTable=data.frame showing conservation and catch performance
 # usage:    in lapply to produce stats for a group of simulations
-.simPerfStats <- function( obj, inclAgg=FALSE, exclNoTAC=FALSE  )
+.simPerfStats <- function( obj, inclAgg=FALSE, exclNoTAC=FALSE,
+                           B0_p = NULL )
 {
   # Pull sublists
   om        <- obj$om
@@ -435,18 +436,22 @@ makeStatTable <- function( sims = 1, folder = "", ... )
   SB_ispt <- array(NA, dim = c(nGoodReps,nS,(nP-1),nT))
   SB_ispt[,1,,] <- SB_ipt[,1:(nP-1),]
   
+  # B0 values: user-supplied B0_p, or SBeq_pf[,1]
+  # from the ref pt curves (equilibrium SSB at F=0)
+  if (is.null(B0_p))
+    B0_p <- obj$rp[[1]]$refCurves$SBeq_pf[, 1]
+
   for(i in 1:nGoodReps)
   {
     idx <- allConvReps[i]
-    # rp          <- obj$rp[[idx]]
-    B0_isp[i,1,] <- c(9.406,2.782,4.989)
-    
+    B0_isp[i,1,] <- B0_p[1:(nP-1)]
+
     tdxUSR        <- 1990:1999 - 1989
     scalarUSR     <- 1
-    
+
     USR_isp[i,,]  <- apply(X = scalarUSR * SB_ispt[idx,1:nS,,tdxUSR,drop = FALSE], FUN = mean, MARGIN = 2:3 )
-    
-  } 
+
+  }
   
   # Bmsy_p   <- rp$FmsyRefPts$BeqFmsy_p
   # Fmsy_p   <- rp$FmsyRefPts$Fmsy_p

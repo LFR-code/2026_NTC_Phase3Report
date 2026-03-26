@@ -84,7 +84,7 @@ status.
 The over-estimation bias is more pronounced under the
 *SISCAH-1S-Pred* OM than under the *SISCAH-3S-Pred* OM.
 Under the three-stock OM, the flat biomass trajectory during
-the projection period limits the extent to which the
+the projection period  the extent to which the
 assessment can over-estimate, because indices provide a
 strong signal of low and stable abundance. The implication
 is that assessment model performance improves when the
@@ -103,14 +103,29 @@ lower and the HCR may perform differently. Future work could
 explore harvest control rules tuned to reference points from
 predation-based models.
 
-**Process error in projections**: the current simulation
-framework draws recruitment process errors from conditioned
-posteriors, but there are outstanding questions about
-whether the variance of process errors in the projection
-period adequately represents uncertainty. Projection
-uncertainty envelopes appear flat in some simulations,
-suggesting that the process error implementation may need
-refinement.
+**Fecundity-at-age in spawn indices**: age-dependent egg
+production was incorporated in the *SISCAH-3S-Pred*
+operating model via an adjustment to the historical spawn
+index data, using numbers-at-age estimates from a separate
+model to convert observed egg deposition to a
+fecundity-corrected biomass equivalent. This adjustment was
+not applied to the *SISCAH-DDM* or *SISCAH-1S-Pred*
+operating models. Ideally, fecundity-at-age would be
+incorporated directly into the observation model by
+generating expected spawn index values from age-specific
+fecundity and estimated numbers-at-age, rather than
+adjusting the data externally. Future revisions of the
+operating models should fold fecundity-at-age into the
+model structure.
+
+**Spatial correlation in process errors**: the current
+simulation framework draws recruitment and mortality
+process errors independently for each Stat Area in the
+*SISCAH-3S-Pred* OM. In reality, environmental drivers
+of recruitment and natural mortality are likely correlated
+across Stat Areas. Introducing spatially correlated
+process errors could widen uncertainty envelopes and
+alter the relative performance of allocation methods.
 
 **Movement among Stat Areas**: the *SISCAH-3S-Pred* operating
 model treats the three Stat Area stocks as independent, with no
@@ -121,12 +136,25 @@ effective productivity of individual Stat Areas and alter the
 impact of spatial allocation methods.
 
 **Predator dynamics**: future predator abundance is projected
-using surplus production models for each predator species.
+using surplus production models for most predator species,
+except for Hake which use an age-structured model.
 These projections assume that predator populations will
 stabilise near carrying capacity, which appears reasonable
-for most species but remains uncertain for Humpback Whales.
-Changes in predator abundance would directly affect herring
-productivity and the performance of harvest control rules.
+for most species but remains uncertain for others. For
+example, recent estimates of Pacific Hake biomass have
+reached very low levels [@jtc2025hake] and it is
+unclear when biomass will recover and to what level.
+Therefore, these simulations likely over-estimate the
+impact of Hake predation on WCVI Herring. Similarly,
+while North Pacific Humpback Whale populations show
+recent signs of stabilising abundance
+[@cheeseman2024_hbNt], it is still too early to predict
+the long-term abundance level.
+Changes in abundance of significant predators would directly 
+affect herring productivity and the expected performance of 
+harvest control rules. Continued predator diet sampling and 
+updated bio-energetic models as new predator abundance estimates 
+become available would help reduce this source of uncertainty.
 
 **Additional allocation methods**: only three allocation
 methods were tested. Other approaches, such as allocating
@@ -150,4 +178,8 @@ reinforces the importance of resolving uncertainty about
 predation mortality for WCVI herring management, and
 demonstrates the value of testing management procedures
 against robustness scenarios that include alternative
-ecological hypotheses.
+ecological hypotheses. Among the three allocation methods
+tested, differences in performance were negligible under
+all operating models, suggesting that the choice of spatial
+allocation method is not a priority concern under current
+productivity assumptions.

@@ -11,96 +11,29 @@
 
 
 # plotYieldCurve()
-# Equilibrium yield curve from the DDM operating model fit,
-# with labelled reference points.
-# Style mirrors yieldCurveFun.R: smooth spline, rotated srt=90 labels at y=0.
+# Wrapper around plotRefPtsExpC() from yieldCurveFun.R.
+# Source yieldCurveFun.R before calling.
 # Inputs:
-#   fit  -- DDMfit object (readRDS from fit_WCVI2023_OM_mle.rds)
-plotYieldCurve <- function( fit = DDMfit )
+#   empRC   -- saveEmpRefCurves object
+#   histRpt -- DDMfit (history report object)
+#   qProbs  -- quantile probabilities for ref pt bands
+#   yrRange -- year indices for averaging (relative to end)
+plotYieldCurve <- function( empRC   = saveEmpRefCurves,
+                            histRpt = DDMfit,
+                            Bref    = 17.35,
+                            qProbs  = c(0.25, 0.5, 0.75),
+                            yrRange = -c(150:50) )
 {
-  rp   <- fit$repOpt$refPts
-  Beq  <- rp$refCurves$SBeq_pf[1, ]
-  Yeq  <- rp$refCurves$Yeq_pf[1, ]
-  Bmsy <- rp$FmsyRefPts$SBeqFmsy_p
-  MSY  <- rp$FmsyRefPts$YeqFmsy_p
-  B0   <- fit$repOpt$B0_p
-  LRP  <- 0.3 * B0
+  suppressWarnings(suppressMessages(
+    plotRefPtsExpC(
+      empRefCurves = empRC,
+      histRpt      = histRpt,
+      yrRange      = yrRange,
+      qProbs       = qProbs,
+      area         = "WCVI",
+      Bref         = Bref)
+  ))
 
-  clrs <- RColorBrewer::brewer.pal(n = 8, name = "Dark2")
-
-  # Append B0 point (F=0 gives B=B0, Y=0) so curve reaches unfished biomass
-  Beq_full <- c(Beq, B0)
-  Yeq_full <- c(Yeq, 0)
-
-  fit_spl <- smooth.spline(x = Beq_full, y = Yeq_full, nknots = 10)
-
-  adjustpos <- 1.7   # x-offset for rotated labels (mirrors yieldCurveFun.R)
-  msy_x     <- 5     # x position for MSY label
-
-  par(mar  = c(.25, .25, .25, .25),
-      oma  = c(4, 4, 1, 1),
-      xaxs = "r", yaxs = "r", las = 1)
-
-  plot(
-    x    = c(0, B0 * 1.05),
-    y    = c(0, max(Yeq_full, na.rm = TRUE) * 1.2),
-    axes = FALSE,
-    type = "n"
-  )
-  axis(side = 2, las = 1, cex.axis = 1)
-  axis(side = 1, cex.axis = 1)
-  grid()
-  box()
-  lines(fit_spl, col = "black", lwd = 3)
-
-  # B0
-  points(x = B0, y = predict(fit_spl, B0)$y,
-         pch = 16, col = clrs[1], cex = 1.5)
-  text(x = B0 + adjustpos, y = 0,
-       labels = expression(B[0]), pos = 4, srt = 90)
-
-  # LRP (0.3 B0)
-  segments(x0 = LRP, y0 = -1, x1 = LRP,
-           y1 = predict(fit_spl, LRP)$y, lty = 2)
-  points(x = LRP, y = predict(fit_spl, LRP)$y,
-         pch = 16, col = clrs[2], cex = 1.5)
-  text(x = LRP - adjustpos, y = 0,
-       labels = expression("LRP, 0.3" * B[0]), pos = 4, srt = 90)
-
-  # MSY horizontal line and label
-  segments(x0 = -5, y0 = predict(fit_spl, Bmsy)$y,
-           x1 = Bmsy, y1 = predict(fit_spl, Bmsy)$y, lty = 2)
-  text(x = msy_x, y = predict(fit_spl, Bmsy)$y,
-       labels = "MSY", pos = 3)
-
-  # Bmsy
-  segments(x0 = Bmsy, y0 = -1, x1 = Bmsy,
-           y1 = predict(fit_spl, Bmsy)$y, lty = 2)
-  points(x = Bmsy, y = predict(fit_spl, Bmsy)$y,
-         pch = 16, col = clrs[3], cex = 1.5)
-  text(x = Bmsy - adjustpos, y = 0,
-       labels = expression(B[MSY]), pos = 4, srt = 90)
-
-  # 0.4 Bmsy
-  segments(x0 = 0.4 * Bmsy, y0 = -1, x1 = 0.4 * Bmsy,
-           y1 = predict(fit_spl, 0.4 * Bmsy)$y, lty = 2)
-  points(x = 0.4 * Bmsy, y = predict(fit_spl, 0.4 * Bmsy)$y,
-         pch = 16, col = clrs[4], cex = 1.5)
-  text(x = 0.4 * Bmsy - adjustpos, y = 0,
-       labels = expression(0.4 * B[MSY]), pos = 4, srt = 90)
-
-  # 0.8 Bmsy
-  segments(x0 = 0.8 * Bmsy, y0 = -1, x1 = 0.8 * Bmsy,
-           y1 = predict(fit_spl, 0.8 * Bmsy)$y, lty = 2)
-  points(x = 0.8 * Bmsy, y = predict(fit_spl, 0.8 * Bmsy)$y,
-         pch = 16, col = clrs[5], cex = 1.5)
-  text(x = 0.8 * Bmsy - adjustpos, y = 0,
-       labels = expression(0.8 * B[MSY]), pos = 4, srt = 90)
-
-  mtext(side = 1, outer = TRUE, text = "Spawning Biomass (kt)",
-        line = 2.5, font = 2, las = 0)
-  mtext(side = 2, outer = TRUE, text = "Equilibrium Yield (kt)",
-        line = 2.5, font = 2, las = 0)
 } # END plotYieldCurve()
 
 
@@ -112,41 +45,43 @@ plotYieldCurve <- function( fit = DDMfit )
 #   fit3S   -- fit3S  (loaded as 'reports' from fit_3S_2024.RData)
 plotHistSSB <- function( DDMfit = DDMfit,
                          fit1S  = fit1S,
-                         fit3S  = fit3S )
+                         fit3S  = fit3S,
+                         maxYear = 2023 )
 {
   fYear <- DDMfit$fYear
-  lYear <- DDMfit$lYear
 
   # DDM: single stock SB_pt (1 x nT)
   SB_DDM  <- DDMfit$repOpt$SB_pt[1, ]
-  yrs_DDM <- seq(from = fYear, by = 1, length.out = length(SB_DDM))
+  yrs_DDM <- seq(from = fYear, by = 1,
+                 length.out = length(SB_DDM))
+  keep_DDM <- yrs_DDM <= maxYear
+  SB_DDM   <- SB_DDM[keep_DDM]
+  yrs_DDM  <- yrs_DDM[keep_DDM]
 
   # 1S: single stock SB_pt (1 x nT)
   SB_1S  <- fit1S$repOpt$SB_pt[1, ]
-  yrs_1S <- seq(
-    from   = fit1S$fYear,
-    by     = 1,
-    length.out = length(SB_1S)
-  )
+  yrs_1S <- seq(from = fit1S$fYear, by = 1,
+                length.out = length(SB_1S))
+  keep_1S <- yrs_1S <= maxYear
+  SB_1S   <- SB_1S[keep_1S]
+  yrs_1S  <- yrs_1S[keep_1S]
 
-  # 3S: three stocks SB_pt (nP x nT); aggregate = rowSums
-  SB_3S_mat <- fit3S$repOpt$SB_pt      # 3 x nT
+  # 3S: three stocks SB_pt (nP x nT)
+  SB_3S_mat <- fit3S$repOpt$SB_pt
+  yrs_3S    <- seq(from = fit3S$fYear, by = 1,
+                   length.out = ncol(SB_3S_mat))
+  keep_3S   <- yrs_3S <= maxYear
+  SB_3S_mat <- SB_3S_mat[, keep_3S, drop = FALSE]
+  yrs_3S    <- yrs_3S[keep_3S]
   SB_3S_agg <- colSums(SB_3S_mat)
-  yrs_3S    <- seq(
-    from   = fit3S$fYear,
-    by     = 1,
-    length.out = ncol(SB_3S_mat)
-  )
 
-  # Reference lines from DDM
+  # B0 reference values
   B0_DDM  <- DDMfit$repOpt$B0_p
-  rp_DDM  <- DDMfit$repOpt$refPts
-  Fmsy    <- rp_DDM$FmsyRefPts$Fmsy_p
-  Bmsy    <- rp_DDM$refCurves$SBeq_pf[
-    1, which.min(abs(rp_DDM$refCurves$F - Fmsy))]
+  B0_1S   <- fit1S$repOpt$refPts$refCurves$SBeq_pf[1, 1]
+  B0_3S   <- sum(fit3S$repOpt$refPts$refCurves$SBeq_pf[, 1])
 
   allYrs <- c(yrs_DDM, yrs_1S, yrs_3S)
-  allSB  <- c(SB_DDM, SB_1S, SB_3S_agg)
+  allSB  <- c(SB_DDM, SB_1S, SB_3S_agg, B0_DDM)
 
   par(mar = c(4, 5, 1, 1), oma = c(0, 0, 0, 0))
   plot(
@@ -158,13 +93,13 @@ plotHistSSB <- function( DDMfit = DDMfit,
     las  = 1
   )
 
-  # Reference lines
-  abline(h = B0_DDM, lty = 3, col = "grey50", lwd = 1.5)
-  abline(h = Bmsy,   lty = 2, col = "blue",   lwd = 1.5)
+  # B0 reference lines
+  abline(h = B0_DDM, lty = 3, col = "grey50",    lwd = 1.5)
+  abline(h = B0_1S,  lty = 3, col = "steelblue", lwd = 1.5)
+  abline(h = B0_3S,  lty = 3, col = "firebrick",  lwd = 1.5)
 
   # Per-Stat Area lines for 3S-predM (dashed)
   pfmaCols <- c("tomato", "darkorange", "firebrick")
-  pfmaLabs <- fit3S$stock
   for (p in seq_len(nrow(SB_3S_mat))) {
     lines(
       x   = yrs_3S,
@@ -176,29 +111,24 @@ plotHistSSB <- function( DDMfit = DDMfit,
   }
 
   # Aggregate lines
-  lines(x = yrs_DDM, y = SB_DDM,  col = "black",      lwd = 2.5)
-  lines(x = yrs_1S,  y = SB_1S,   col = "steelblue",  lwd = 2.5)
-  lines(x = yrs_3S,  y = SB_3S_agg, col = "firebrick", lwd = 2.5)
+  lines(x = yrs_DDM, y = SB_DDM,
+        col = "black", lwd = 2.5)
+  lines(x = yrs_1S, y = SB_1S,
+        col = "steelblue", lwd = 2.5)
+  lines(x = yrs_3S, y = SB_3S_agg,
+        col = "firebrick", lwd = 2.5)
 
-  # Labels
-  labX <- min(allYrs) + 1
-  usr  <- par("usr")
-  text(
-    x      = max(allYrs) - 1,
-    y      = B0_DDM * 1.03,
-    labels = expression(B[0]),
-    adj    = c(1, 0),
-    col    = "grey40",
-    cex    = 0.85
-  )
-  text(
-    x      = max(allYrs) - 1,
-    y      = Bmsy * 1.03,
-    labels = expression(B[MSY * "|" * DDM]),
-    adj    = c(1, 0),
-    col    = "blue",
-    cex    = 0.85
-  )
+  # B0 labels
+  labX <- max(allYrs) - 1
+  text(x = labX, y = B0_DDM * 1.03,
+       labels = expression(B["0 | DDM"]),
+       adj = c(1, 0), col = "grey40", cex = 0.85)
+  text(x = labX, y = B0_1S * 1.03,
+       labels = expression(B["0 | 1S"]),
+       adj = c(1, 0), col = "steelblue", cex = 0.85)
+  text(x = labX, y = B0_3S * 1.03,
+       labels = expression(B["0 | 3S"]),
+       adj = c(1, 0), col = "firebrick", cex = 0.85)
 
   legend(
     x      = "topright",

@@ -5,9 +5,10 @@
 # All figures use base plot (no ggplot2).
 #
 # Functions:
-#   plotSimProj()   -- Simulation projection tulip plots (slides 6, 10, 17)
-#   plotRetroFits() -- Retrospective assessment fits     (slides 7, 11, 18)
-#   plotHCRPhase()  -- HCR phase scatter plots          (slides 8, 12, 19)
+#   plotSimProj()    -- Simulation projection tulip plots (slides 6, 10, 17)
+#   plotRetroFits()  -- Retrospective assessment fits     (slides 7, 11, 18)
+#   plotHCRPhase()   -- HCR phase scatter plots          (slides 8, 12, 19)
+#   plotProjByArea() -- 3x3 per-Stat Area projection (B, C, U)
 
 
 # plotSimProj()
@@ -218,6 +219,153 @@ plotSimProj <- function( obj = simDDM )
 
   mtext(side = 1, outer = TRUE, text = "Year", line = 1.5)
 } # END plotSimProj()
+
+
+# plotProjByArea()
+# 3x3 panel figure for spatially structured OMs.
+# Columns: Stat Areas. Rows: SSB, commercial catch, U.
+# Herring only (s=1), excludes predator species.
+# Inputs:
+#   obj   -- simulation blob (e.g. sim3S_MP1)
+#   B0_p  -- per-area unfished biomass for ref lines
+#   Bref  -- aggregate Bref for context (default 17.35)
+plotProjByArea <- function( obj   = sim3S_MP1,
+                            B0_p  = NULL,
+                            Bref  = 17.35 )
+{
+  fYear    <- obj$ctlList$opMod$fYear
+  nT       <- obj$om$nT
+  nP       <- obj$om$nP
+  tMP      <- obj$om$tMP
+  yrs      <- seq(from = fYear, by = 1, length.out = nT)
+  goodReps <- obj$goodReps
+  nReps    <- sum(goodReps)
+
+  # Area labels
+  areaLabs <- dimnames(obj$ctlList$opMod$histRpt$I_pgt)[[1]]
+  if (is.null(areaLabs))
+    areaLabs <- paste0("Area ", seq_len(nP))
+
+  # Fleet indices: fishing fleets only (not predators)
+  fleetNms <- obj$ctlList$opMod$fleets
+  fishF <- which(fleetNms %in% c("reduction", "seineRoe",
+                                  "gillnet"))
+  sokF  <- which(obj$om$fleetType_f == 2)
+
+  # --- Extract arrays for s=1 (herring) ---
+  # SSB: i x P x T
+  SB_ipt <- obj$om$SB_ispt[goodReps, 1, , , drop = FALSE]
+  dim(SB_ipt) <- c(nReps, nP, nT)
+
+  # Commercial catch per area: fishing fleets only
+  C_ipt <- apply(
+    X = obj$om$C_ispft[goodReps, 1, , fishF, ,
+                       drop = FALSE],
+    FUN = sum, MARGIN = c(1, 3, 5))
+
+  # Harvest rate: U = fishing catch / (SB + fishing catch)
+  Ctot_ipt <- apply(
+    X = obj$om$C_ispft[goodReps, 1, , c(fishF, sokF), ,
+                       drop = FALSE],
+    FUN = sum, MARGIN = c(1, 3, 5))
+  U_ipt <- Ctot_ipt / (SB_ipt + Ctot_ipt)
+  U_ipt[!is.finite(U_ipt)] <- 0
+
+  # Quantiles
+  SB_qpt <- apply(X = SB_ipt, FUN = quantile,
+                   MARGIN = c(2, 3),
+                   probs = c(0.025, 0.5, 0.975),
+                   na.rm = TRUE)
+  C_qpt  <- apply(X = C_ipt, FUN = quantile,
+                   MARGIN = c(2, 3),
+                   probs = c(0.025, 0.5, 0.975),
+                   na.rm = TRUE)
+  U_qpt  <- apply(X = U_ipt, FUN = quantile,
+                   MARGIN = c(2, 3),
+                   probs = c(0.025, 0.5, 0.975),
+                   na.rm = TRUE)
+
+  # Trim to projection start - 5 years for context
+  tStart <- max(1, tMP - 5)
+  tIdx   <- tStart:nT
+  yrsP   <- yrs[tIdx]
+
+  # Layout: 3 rows (B, C, U) x nP columns
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op))
+  par(mfrow = c(3, nP),
+      mar   = c(1, 4, 1.5, 0.5),
+      oma   = c(3, 1, 0, 0))
+
+  # --- Row 1: SSB ---
+  for (p in seq_len(nP)) {
+    ymax <- max(SB_qpt[3, p, tIdx], na.rm = TRUE) * 1.1
+    plot(x = range(yrsP), y = c(0, ymax),
+         type = "n", xlab = "", ylab = "",
+         las = 1, xaxt = "n")
+    axis(side = 1, labels = FALSE)
+    mtext(side = 3, text = areaLabs[p], font = 2,
+          line = 0.3, cex = 0.8)
+    if (p == 1)
+      mtext(side = 2, text = "SSB (kt)", line = 2.8,
+            cex = 0.7)
+    polygon(
+      x = c(yrsP, rev(yrsP)),
+      y = c(SB_qpt[1, p, tIdx],
+            rev(SB_qpt[3, p, tIdx])),
+      col = "grey75", border = NA)
+    lines(x = yrsP, y = SB_qpt[2, p, tIdx], lwd = 2)
+    abline(v = yrs[tMP] - 0.5, lty = 2,
+           col = "grey50", lwd = 1)
+    if (!is.null(B0_p))
+      abline(h = B0_p[p], lty = 3, col = "grey40",
+             lwd = 1.5)
+  }
+
+  # --- Row 2: Commercial catch ---
+  for (p in seq_len(nP)) {
+    ymax <- max(C_qpt[3, p, tIdx], na.rm = TRUE) * 1.1
+    if (ymax == 0 || !is.finite(ymax)) ymax <- 0.1
+    plot(x = range(yrsP), y = c(0, ymax),
+         type = "n", xlab = "", ylab = "",
+         las = 1, xaxt = "n")
+    axis(side = 1, labels = FALSE)
+    if (p == 1)
+      mtext(side = 2, text = "Catch (kt)", line = 2.8,
+            cex = 0.7)
+    polygon(
+      x = c(yrsP, rev(yrsP)),
+      y = c(C_qpt[1, p, tIdx],
+            rev(C_qpt[3, p, tIdx])),
+      col = "grey75", border = NA)
+    lines(x = yrsP, y = C_qpt[2, p, tIdx], lwd = 2)
+    abline(v = yrs[tMP] - 0.5, lty = 2,
+           col = "grey50", lwd = 1)
+  }
+
+  # --- Row 3: Harvest rate ---
+  for (p in seq_len(nP)) {
+    ymax <- max(U_qpt[3, p, tIdx], na.rm = TRUE) * 1.1
+    if (ymax == 0 || !is.finite(ymax)) ymax <- 0.15
+    plot(x = range(yrsP), y = c(0, ymax),
+         type = "n", xlab = "", ylab = "",
+         las = 1)
+    if (p == 1)
+      mtext(side = 2, text = "Harvest Rate",
+            line = 2.8, cex = 0.7)
+    polygon(
+      x = c(yrsP, rev(yrsP)),
+      y = c(U_qpt[1, p, tIdx],
+            rev(U_qpt[3, p, tIdx])),
+      col = "grey75", border = NA)
+    lines(x = yrsP, y = U_qpt[2, p, tIdx], lwd = 2)
+    abline(v = yrs[tMP] - 0.5, lty = 2,
+           col = "grey50", lwd = 1)
+    abline(h = Bref, lty = 0)  # placeholder, no Uref line
+  }
+
+  mtext(side = 1, outer = TRUE, text = "Year", line = 1.5)
+} # END plotProjByArea()
 
 
 # plotRetroFits()

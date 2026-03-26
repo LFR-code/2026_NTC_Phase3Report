@@ -36,7 +36,9 @@
 
 - Under the *SISCAH-DDM* operating model, the MP performs as
   designed, maintaining biomass above the limit reference
-  point approximately 75\% of the time and producing catches
+  point ($0.3 B_0$) approximately 96\% of the time
+  (exceeding the 75\% conservation objective) and producing
+  catches
   near the maximum sustainable yield of approximately
   1,600 t.
 

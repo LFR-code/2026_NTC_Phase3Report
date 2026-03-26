@@ -111,7 +111,14 @@ source(here('R/predM/ms3RrefPts.R'))
 source(here('R/predM/ms3Rplots.R'))
 source(here('R/ms3Rstats.R'))
 
+# TODO: Source SISCAH plotting functions for appendix
+# figures (FAT, functional response, RPS). These have
+# dependencies on SISCA.R that need resolving.
+# source(here('R/SISCAplots.R'))
+# source(here('R/plotPerCapPred.R'))
+
 # Source figure/table wrapper scripts
+source(here('R/yieldCurveFun.R'))
 source(here('R/plotMethods.R'))
 source(here('R/plotResults.R'))
 source(here('R/tableMaker.R'))
@@ -121,8 +128,11 @@ DDMfit <- readRDS(here(
   'Models/OMHistory/fit_WCVI2023_OM_mle/fit_WCVI2023_OM_mle.rds'))
 load(here('Models/OMHistory/fit_1S_2024/fit_1S_2024.RData'))
 fit1S <- reports; rm(reports)
-load(here('Models/OMHistory/fit_3S_2024/fit_3S_2024.RData'))
+load(here('Models/OMHistory/fit_3S_predM/fit_3S_predM.RData'))
 fit3S <- reports; rm(reports)
+
+# Load empirical reference curves for DDM yield curve
+load(here('Models/WCVI_empRefCurves.RData'))
 
 # Load simulation results (each .RData loads a 'blob'; rename immediately)
 load(here(paste0(

@@ -5,6 +5,7 @@ rmd_files: ["index.Rmd",
             "02-methods.Rmd",
             "03-results.Rmd",
             "04-discussion.Rmd",
-            "05-references.Rmd"]
+            "05-references.Rmd",
+            "06-appendix.Rmd"]
 delete_merged_file: true
 output_dir: "_book"
