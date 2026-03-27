@@ -2,12 +2,12 @@
 
 This section describes the closed-loop simulation framework
 developed for testing a proposed WCVI herring re-opening
-procedure. We first describe the three operating models used
-to represent alternative hypotheses about WCVI herring
-population dynamics. We then describe the management
-procedure, including the assessment model, the harvest control
-rule, and the spatial TAC allocation methods. Finally, we
-describe the simulation design and performance metrics.
+procedure. The three operating models used to represent alternative
+hypotheses about WCVI herring population dynamics are
+described first, followed by the management procedure,
+including the assessment model, the harvest control rule,
+and the spatial TAC distribution methods. The simulation
+design and performance metrics are described last.
 
 ## Operating models
 
@@ -63,7 +63,7 @@ into three independent stocks corresponding to Stat Areas 23, 24,
 and 25. Each stock is fit independently to Stat Area-level catch,
 spawn index, and age composition data. Predation mortality
 is included as in *SISCAH-1S-Pred*, with coast-wide predator
-consumption allocated among Stat Areas in proportion to vulnerable
+consumption distributed among Stat Areas in proportion to vulnerable
 biomass.
 
 The aggregate unfished biomass under *SISCAH-3S-Pred* is
@@ -94,7 +94,7 @@ plotHistSSB(DDMfit = DDMfit, fit1S = fit1S, fit3S = fit3S)
 
 The management procedure consists of two steps: (i) an
 aggregate stock assessment that determines a coastwide TAC,
-and (ii) a spatial allocation step that distributes the TAC
+and (ii) a spatial distribution step that distributes the TAC
 among Stat Areas.
 
 ### Step 1: aggregate assessment and harvest control rule
@@ -109,10 +109,8 @@ biomass. The *SISCAH-DIM* model is the adopted assessment
 model for BC Herring stock assessment regions (SARs) that
 currently have management procedures and prosecute TACs.
 
-The harvest control rule (HCR) captures the surplus
-biomass above a minimum escapement level, capped at a
-maximum harvest rate of 8.47\%. The rule has two
-parameters:
+The harvest control rule (HCR) is a minimum escapement
+rule with two parameters:
 
 - $B_{ref}$: a preliminary minimum escapement biomass
   of approximately 17.35 kt, which is the $B_{MSY}$
@@ -136,11 +134,16 @@ The HCR operates as follows:
 \end{equation}
 
 \noindent where $\hat{B}_t$ is the estimated aggregate
-spawning biomass from the assessment model. When biomass
-is at or below $B_{ref}$, the fishery is closed. When
-biomass exceeds $B_{ref}$, the TAC is the surplus above
-$B_{ref}$ (i.e., $\hat{B}_t - B_{ref}$), up to a maximum
-harvest rate of $U_{ref}$. The effective harvest rate is
+spawning biomass from the assessment model. The fishery is
+closed when biomass is at or below $B_{ref}$. Above this
+threshold, TAC is the lesser of the full surplus above
+$B_{ref}$ (i.e., $\hat{B}_t - B_{ref}$) and the amount
+implied by harvesting at $U_{ref}$
+(i.e., $U_{ref} \cdot \hat{B}_t$). At low biomass just
+above $B_{ref}$, the surplus rule binds and the implied
+harvest rate is below $U_{ref}$; at higher biomass the
+harvest rate cap binds and TAC grows linearly with biomass.
+The effective harvest rate is
 $U_t = \text{TAC}_t / \hat{B}_t$.
 
 ```{r fig-HCRdiagram, fig.cap = capHCRdiagram, fig.asp = 1.1}
@@ -153,30 +156,30 @@ capHCRdiagram <- paste0(
 plotHCRDiagram(Bref = 17.35, Uref = 0.0847)
 ```
 
-### Step 2: spatial TAC allocation {#sec:allocation}
+### Step 2: spatial TAC distribution {#sec:allocation}
 
 In the second step, the aggregate TAC is distributed among
-Stat Areas. Three allocation methods are tested:
+Stat Areas. Three distribution methods are tested:
 
-1. **Spawn index (SI) allocation**: the TAC is allocated in
+1. **Spawn index (SI) distribution**: the TAC is distributed in
    proportion to the average spawn index observed in each
    Stat Area over the most recent three years. This method uses
    the most current data on relative abundance to guide
-   allocation.
+   distribution.
 
-2. **Catch allocation**: the TAC is allocated in proportion
+2. **Catch distribution**: the TAC is distributed in proportion
    to the average catch taken in each Stat Area over the most
    recent years with non-zero catches. This method reflects
    historical fishing patterns.
 
-3. **All Stat Area 23 allocation**: the entire TAC is allocated to
+3. **All Stat Area 23 distribution**: the entire TAC is directed to
    Stat Area 23 (Barkley Sound). This method represents a scenario
    where fishing is concentrated in a single area, which may
    reflect operational preferences or access considerations.
 
-Within each Stat Area, the allocated TAC is further distributed
-among commercial fleets (seine roe, gillnet, and spawn-on-kelp
-or bough) according to fixed fleet allocation proportions.
+Within each Stat Area, the TAC is further distributed among
+commercial fleets (seine roe, gillnet, and spawn-on-kelp or
+bough) according to fixed fleet proportions.
 
 ## Simulation design
 
@@ -193,8 +196,8 @@ apply the following steps in each projection year
    observation data across statistical areas.
 2  Fit the single-stock SISCAH-DIM assessment model;
 3. Apply the harvest control rule to SISCAH-DIM estimates to 
-   derive aggregate TAC. If in a spatial OM, TAC is allocated 
-   among Stat Areas using the chosen allocation method;
+   derive aggregate TAC. If in a spatial OM, TAC is distributed
+   among Stat Areas using the chosen distribution method;
 5. Remove catch from the simulated population (either WCVI scale
    or individual statistical areas);
 6. Advance the OM population forward by one year, including
@@ -207,7 +210,7 @@ at their maximum likelihood estimates (MLEs).
 
 ## Performance metrics
 
-We evaluate performance at the WCVI SAR scale using metrics
+Performance at the WCVI SAR scale is evaluated using metrics
 applied in other BC herring regions. Selected metrics include
 
 1. **pLRP**: the probability of maintaining spawning
@@ -223,10 +226,10 @@ first 10 projection years.
 
 4. **Openings**: Median number of years with fishery openings.
 
-5. **pViable**: The probability of catch being above 650 t.
+5. **p650**: The probability of catch being above 650 t.
 
 At the Stat Area level, there are no formal biological reference points 
-or objectives. Therefore, we define the following metrics for performance
+or objectives. Therefore, the following metrics are used for performance
 at the individual Stat Area level:
 
 1. **Probability of low biomass**: the proportion of
@@ -241,7 +244,7 @@ at the individual Stat Area level:
    catch over the entire conditioning period (1951--2024).
 
 These metrics provide a relative measure of how each
-allocation method affects the risk of poor outcomes at the
+distribution method affects the risk of poor outcomes at the
 Stat Area level. Because formal Stat Area-level comparisons
 are only relevant under the spatially structured
 *SISCAH-3S-Pred* OM, these metrics are computed for the

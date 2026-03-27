@@ -176,7 +176,7 @@ the projection period limits the impact of these over-estimates.
 ```{r fig-3Sprojections, fig.cap = cap3Sprojections, fig.asp = 1.0}
 cap3Sprojections <- paste0(
   "Aggregate simulation projections under the ",
-  "\\emph{SISCAH-3S-Pred} operating model (SI allocation). ",
+  "\\emph{SISCAH-3S-Pred} operating model (SI distribution). ",
   "Top: spawning biomass (kt) with aggregate envelope ",
   "(grey) and per-Stat Area median lines (coloured). ",
   "Middle: commercial catch by Stat Area. Bottom: ",
@@ -191,7 +191,7 @@ plotMPSummary(
 ```{r fig-3SprojByArea, fig.cap = cap3SprojByArea, fig.asp = 1.0}
 cap3SprojByArea <- paste0(
   "Per-Stat Area projections under the ",
-  "\\emph{SISCAH-3S-Pred} operating model (SI allocation). ",
+  "\\emph{SISCAH-3S-Pred} operating model (SI distribution). ",
   "Columns show Stat Areas 25, 24, and 23. Rows show ",
   "spawning biomass (kt), commercial catch by fleet (kt), ",
   "and SOK/FSC catch (kt). Reference lines in SSB panels ",
@@ -224,11 +224,11 @@ cap3ShcrPhase <- paste0(
 plotHCRScatter(obj = sim3S_MP1)
 ```
 
-### Spatial TAC allocation
+### Spatial TAC distribution
 
-Three allocation methods were tested for distributing the
+Three distribution methods were tested for distributing the
 aggregate TAC among Stat Areas (Section \@ref(sec:allocation)).
-The 2024 allocation proportions based on spawn indices are
+The 2024 distribution proportions based on spawn indices are
 approximately 5\%, 38\%, and 57\% for Stat Areas 25, 24, and 23,
 respectively, while long-term average proportions are
 approximately 11\%, 31\%, and 58\%. Catch-based proportions
@@ -243,20 +243,21 @@ makeAllocTable(mp1 = sim3S_MP1, mp2 = sim3S_MP2, mp3 = sim3S_MP3)
 ### Performance by Stat Area
 
 The probability of low biomass (biomass below the historical
-minimum) is very low across all Stat Areas and allocation methods,
-ranging from 0\% to 0.2\%. This is because catches are
-negligible and biomass performance is driven almost entirely
-by natural and predation mortality rather than fishing.
+minimum) is very low across all Stat Areas and distribution
+methods, ranging from 0\% to 0.2\%. This is because catches
+are negligible and biomass performance is driven almost
+entirely by natural and predation mortality rather than
+fishing.
 
 The probability of low catch (catch below the historical
-minimum) is high for all Stat Areas and allocation methods,
+minimum) is high for all Stat Areas and distribution methods,
 ranging from 71\% to 100\%. This reflects the near-permanent
 fishery closure under the *SISCAH-3S-Pred* OM.
 
-There is very little difference among allocation methods or
-among Stat Areas in either performance metric. Given that catches
-are close to zero, the method used to distribute them has
-negligible impact on outcomes.
+There is very little difference among distribution methods
+or among Stat Areas in either performance metric. Given that
+catches are close to zero, the method used to distribute them
+has negligible impact on outcomes.
 
 ```{r tab-perfBiomass}
 perfTbls <- makePerfTables()

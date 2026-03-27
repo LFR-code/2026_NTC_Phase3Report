@@ -68,8 +68,8 @@ makeAllocTable <- function( mp1 = sim3S_MP1,
       "2024", "Long-run"
     ),
     caption = paste0(
-      "Median TAC allocation proportions by Stat Area for the three ",
-      "allocation methods. Values shown for the first projection ",
+      "Median TAC distribution proportions by Stat Area for the three ",
+      "distribution methods. Values shown for the first projection ",
       "year (2024) and as long-run medians over the full 25-year ",
       "projection period."
     )
@@ -77,8 +77,8 @@ makeAllocTable <- function( mp1 = sim3S_MP1,
     kableExtra::add_header_above(
       header = c(
         " " = 1,
-        "SI allocation" = 2,
-        "Catch allocation" = 2,
+        "SI distribution" = 2,
+        "Catch distribution" = 2,
         "All Stat Area 23" = 2
       )
     ) |>
@@ -137,7 +137,7 @@ makePerfTables <- function(
     col.names = c("Stat Area", "SI", "Catch", "All Stat Area 23"),
     caption  = paste0(
       "Probability of low biomass (biomass below the historical ",
-      "minimum) by Stat Area and allocation method under the ",
+      "minimum) by Stat Area and distribution method under the ",
       "\\emph{SISCAH-3S-Pred} operating model."
     )
   ) |>
@@ -167,7 +167,7 @@ makePerfTables <- function(
     col.names = c("Stat Area", "SI", "Catch", "All Stat Area 23"),
     caption  = paste0(
       "Probability of low catch (catch below the historical ",
-      "minimum) by Stat Area and allocation method under the ",
+      "minimum) by Stat Area and distribution method under the ",
       "\\emph{SISCAH-3S-Pred} operating model."
     )
   ) |>
@@ -204,7 +204,7 @@ makeOMStatsTable <- function(
       "MAC10 (t)",
       "MAS10 (t)",
       "Openings (of 10 yrs)",
-      "pViable: P($C > 650$ t)"),
+      "p650: P($C > 650$ t)"),
     DDM = c(
       fmt_pct(ddm$pBtGt.3B0),
       fmt_t(ddm$avgCatch_t),

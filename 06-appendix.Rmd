@@ -27,7 +27,7 @@ model equations broken into observation models, parameter
 priors, and the final model objective function
 (Table \ref{tab:SISCAstatModelEqns}). Other than the two
 changes described below, the model is the same as
-*SISCAH-1S-Pred* so we refer readers to
+*SISCAH-1S-Pred*; readers are referred to
 @doherty2024predation for more information.
 
 There are two main changes in the specification and data

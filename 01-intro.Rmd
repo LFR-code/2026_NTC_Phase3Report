@@ -31,9 +31,9 @@ capacity, similar to an exceptional circumstances
 framework, for monitoring spawn dynamics at finer spatial
 scales than the assessment model considers.
 
-The present working paper describes activities in the third
+This report describes activities in the third
 year (Phase 3) of the project. Building on the Phase 2
-recommendation, we use the *SISCAH-3S-Pred* model as an
+recommendation, the *SISCAH-3S-Pred* model is used as an
 operating model within a closed-loop simulation framework to
 test a potential WCVI herring re-opening procedure. This
 represents a key step toward the project's goal of evaluating
@@ -75,10 +75,10 @@ objectives.
 
 ## Objectives
 
-In this phase, we develop a closed-loop simulation framework
-and use it to test a proposed minimum escapement harvest
-control rule for WCVI herring under three operating models of
-increasing ecological complexity:
+In this phase, a closed-loop simulation framework was
+developed and used to test a proposed minimum escapement
+harvest control rule for WCVI herring under three operating
+models of increasing ecological complexity:
 
 1. The *SISCAH-DDM* density-dependent mortality model, which
    represents the assumptions currently used in DFO stock
@@ -94,10 +94,11 @@ increasing ecological complexity:
 
 The *SISCAH-3S-Pred* model serves as a robustness test
 operating model. When the MP assumes a single panmictic stock
-but the true population is spatially structured, we can
-evaluate how well the MP protects individual Stat Area stocks
-and how spatial TAC allocation methods affect outcomes.
-We test three allocation methods for distributing the
-aggregate TAC among Stat Areas: (i) proportional to recent spawn
-indices, (ii) proportional to recent catches, and
-(iii) allocating the entire TAC to Stat Area 23 (Barkley Sound).
+but the true population is spatially structured, it is
+possible to evaluate how well the MP protects individual
+Stat Area stocks and how spatial TAC distribution methods
+affect outcomes. Three distribution methods are tested:
+(i) proportional to recent spawn indices,
+(ii) proportional to recent catches, and
+(iii) distributing the entire TAC to Stat Area 23
+(Barkley Sound).

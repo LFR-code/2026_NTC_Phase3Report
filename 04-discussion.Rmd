@@ -1,10 +1,10 @@
 # Discussion
 
-This paper describes research activities for the third year
+This report describes research activities for the third year
 of the ?aayaaqa (Herring) Spawn Dynamics collaboration.
 Building on the three-stock model with predation
-(*SISCAH-3S-Pred*) developed in Phase 2, we developed a
-closed-loop simulation framework and used it to test a
+(*SISCAH-3S-Pred*) developed in Phase 2, a closed-loop
+simulation framework was developed and used to test a
 proposed minimum escapement harvest control rule for WCVI
 herring under three operating models of increasing ecological
 complexity. The *SISCAH-3S-Pred* model serves as a robustness
@@ -17,7 +17,7 @@ as a single stock.
 
 The choice of operating model has a much larger effect on
 expected MP performance than the choice of spatial TAC
-allocation method. Under the *SISCAH-DDM* operating model,
+distribution method. Under the *SISCAH-DDM* operating model,
 the MP performs as designed, maintaining biomass above
 reference levels and producing catches near the maximum
 sustainable yield. Under the *SISCAH-1S-Pred* OM, catches
@@ -49,21 +49,21 @@ model ($B_{ref} = B_{MSY|DDM} \approx 17.35$ kt), it
 becomes increasingly difficult to open the fishery as the
 assumed unfished biomass decreases.
 
-## Spatial allocation
+## Spatial distribution
 
-The spatial TAC allocation method has very little effect on
+The spatial TAC distribution method has very little effect on
 MP performance under any operating model tested. This is
 partly because catches are small or zero under the
 predation-based OMs, so the method used to distribute them
 is inconsequential. Even under the DDM OM where catches are
-larger, the allocation among Stat Areas does not substantially
-change overall conservation risk.
+larger, the distribution among Stat Areas does not
+substantially change overall conservation risk.
 
-This result does not mean that spatial allocation is
-unimportant in general. Under scenarios with higher
-productivity or lower predation mortality, the spatial
-distribution of catch could have meaningful effects on
-individual Stat Area stocks, particularly if some Stat Areas are less
+This result does not mean that spatial distribution of catch
+is unimportant in general. Under scenarios with higher
+productivity or lower predation mortality, the distribution
+of catch could have meaningful effects on individual Stat
+Area stocks, particularly if some Stat Areas are less
 productive than others. The current results are specific to
 the operating models and reference points tested here.
 
@@ -125,7 +125,7 @@ process errors independently for each Stat Area in the
 of recruitment and natural mortality are likely correlated
 across Stat Areas. Introducing spatially correlated
 process errors could widen uncertainty envelopes and
-alter the relative performance of allocation methods.
+alter the relative performance of distribution methods.
 
 **Movement among Stat Areas**: the *SISCAH-3S-Pred* operating
 model treats the three Stat Area stocks as independent, with no
@@ -133,7 +133,7 @@ movement of fish among areas. In reality, herring mix during
 the offshore feeding season and some level of exchange among
 Stat Areas is likely. Including movement could change the
 effective productivity of individual Stat Areas and alter the
-impact of spatial allocation methods.
+impact of spatial distribution methods.
 
 **Predator dynamics**: future predator abundance is projected
 using surplus production models for most predator species,
@@ -156,11 +156,12 @@ harvest control rules. Continued predator diet sampling and
 updated bio-energetic models as new predator abundance estimates 
 become available would help reduce this source of uncertainty.
 
-**Additional allocation methods**: only three allocation
-methods were tested. Other approaches, such as allocating
-proportional to estimated Stat Area-level biomass from a spatial
-assessment model, or using adaptive allocation based on
-real-time monitoring, could be explored in future work.
+**Additional distribution methods**: only three distribution
+methods were tested. Other approaches, such as distributing
+proportional to estimated Stat Area-level biomass from a
+spatial assessment model, or using adaptive distribution
+based on real-time monitoring, could be explored in future
+work.
 
 ## Conclusions
 
@@ -170,7 +171,7 @@ procedures under a range of ecological assumptions. The key
 finding is that the performance of the proposed minimum
 escapement rule is driven primarily by assumptions about
 natural and predation mortality, rather than by the spatial
-allocation of catch. Under operating models that include
+distribution of catch. Under operating models that include
 explicit predation, the fishery would be closed most of the
 time because biomass is near or below the minimum escapement
 level derived from the standard DDM assessment. This result
@@ -178,8 +179,8 @@ reinforces the importance of resolving uncertainty about
 predation mortality for WCVI herring management, and
 demonstrates the value of testing management procedures
 against robustness scenarios that include alternative
-ecological hypotheses. Among the three allocation methods
+ecological hypotheses. Among the three distribution methods
 tested, differences in performance were negligible under
 all operating models, suggesting that the choice of spatial
-allocation method is not a priority concern under current
-productivity assumptions.
+TAC distribution method is not a priority concern under
+current productivity assumptions.

@@ -3,7 +3,7 @@ title: |
   ?aayaaqa (Herring) Spawn Dynamics
 author: |
   Landmark Fisheries Research BCSRIF2-3\
-  Working Paper for Uu-a-thluk Fisheries
+  Technical Report for Uu-a-thluk Fisheries
 
 
 address: |

@@ -2,7 +2,7 @@
 
 ## Key Points {-}
 
-- This working paper summarises analyses completed in the
+- This report summarises analyses completed in the
   third year (2025/26) of the ?aayaaqa (Herring) Spawn
   Dynamics project.
 
@@ -14,15 +14,15 @@
   recommended as the most practical tool for evaluating
   management procedures.
 
-- In 2025/26, we developed a closed-loop simulation
-  framework for testing a potential WCVI herring re-opening
+- In 2025/26, a closed-loop simulation framework was
+  developed for testing a potential WCVI herring re-opening
   procedure. The management procedure (MP) uses a two-step
   harvest control rule: (i) fit an aggregate single-stock
   assessment model to combined WCVI data and apply a minimum
   escapement rule to determine a coastwide total allowable
-  catch (TAC), and (ii) allocate the TAC among Stat Areas based
-  on recent spawn index proportions or other allocation
-  methods.
+  catch (TAC), and (ii) distribute the TAC among Stat Areas
+  based on recent spawn index proportions or other
+  distribution methods.
 
 - The MP was tested under three operating models (OMs) of
   increasing ecological complexity: (i) the *SISCAH-DDM*
@@ -51,14 +51,15 @@
 - Under the *SISCAH-3S-Pred* operating model, the fishery is
   closed more than 50\% of the time because aggregate biomass
   is near the minimum escapement level. The spatial
-  allocation method has very little effect on performance
+  distribution method has very little effect on performance
   given the low catches in simulations.
 
-- We tested three spatial TAC allocation methods: (i) recent
-  average spawn index proportions, (ii) recent average catch
-  proportions, and (iii) allocating 100\% of the TAC to
-  Stat Area 23 (Barkley Sound). Differences among allocation
-  methods were negligible under all operating models.
+- Three spatial TAC distribution methods were tested:
+  (i) recent average spawn index proportions, (ii) recent
+  average catch proportions, and (iii) directing 100\% of
+  the TAC to Stat Area 23 (Barkley Sound). Differences among
+  distribution methods were negligible under all operating
+  models.
 
 ## Project Summary {-}
 
@@ -72,12 +73,12 @@ respond to changing ecosystem conditions and fisheries on a
 finer spatial scale than is considered in current assessment
 models for WCVI Pacific Herring.
 
-This paper summarises analyses conducted in the third year
+This report summarises analyses conducted in the third year
 (2025/26) of the ?aayaaqa (Herring) Spawn Dynamics project.
 Building on the three-stock model with predation
-(*SISCAH-3S-Pred*) developed in Phase 2, we developed a
-closed-loop simulation (management strategy evaluation)
-framework to test a proposed WCVI herring re-opening
+(*SISCAH-3S-Pred*) developed in Phase 2, a closed-loop
+simulation (management strategy evaluation) framework was
+developed to test a proposed WCVI herring re-opening
 procedure. The *SISCAH-3S-Pred* model is used as a
 robustness test operating model, representing a scenario in
 which the true population is spatially structured and subject
@@ -85,4 +86,4 @@ to predation mortality, while the management procedure uses
 a simpler single-stock assessment. Results demonstrate how
 assumptions about predation and spatial structure affect the
 expected performance of harvest control rules and spatial TAC
-allocation methods.
+distribution methods.
