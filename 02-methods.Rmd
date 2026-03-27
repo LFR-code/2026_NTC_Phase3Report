@@ -109,9 +109,10 @@ biomass. The *SISCAH-DIM* model is the adopted assessment
 model for BC Herring stock assessment regions (SARs) that
 currently have management procedures and prosecute TACs.
 
-The harvest control rule (HCR) is a minimum escapement rule
-similar to the current DFO rule for BC herring. The rule has
-two parameters:
+The harvest control rule (HCR) captures the surplus
+biomass above a minimum escapement level, capped at a
+maximum harvest rate of 8.47\%. The rule has two
+parameters:
 
 - $B_{ref}$: a preliminary minimum escapement biomass
   of approximately 17.35 kt, which is the $B_{MSY}$
@@ -125,21 +126,22 @@ two parameters:
 The HCR operates as follows:
 
 \begin{equation}
-U_t = \begin{cases}
+\text{TAC}_t = \begin{cases}
 0 & \text{if } \hat{B}_t \leq B_{ref} \\
-\displaystyle U_{ref} \cdot \left(1 -
-  \frac{B_{ref}}{\hat{B}_t} \right) &
+\displaystyle \min\left(
+  U_{ref} \cdot \hat{B}_t,\;
+  \hat{B}_t - B_{ref} \right) &
   \text{if } \hat{B}_t > B_{ref}
 \end{cases}
 \end{equation}
 
 \noindent where $\hat{B}_t$ is the estimated aggregate
-spawning biomass from the assessment model and $U_t$ is
-the harvest rate applied in year $t$. The TAC is then
-$\text{TAC}_t = U_t \cdot \hat{B}_t$. When biomass is at
-or below $B_{ref}$, the fishery is closed. When biomass
-exceeds $B_{ref}$, the TAC is the surplus above $B_{ref}$,
-up to a maximum harvest rate of $U_{ref}$.
+spawning biomass from the assessment model. When biomass
+is at or below $B_{ref}$, the fishery is closed. When
+biomass exceeds $B_{ref}$, the TAC is the surplus above
+$B_{ref}$ (i.e., $\hat{B}_t - B_{ref}$), up to a maximum
+harvest rate of $U_{ref}$. The effective harvest rate is
+$U_t = \text{TAC}_t / \hat{B}_t$.
 
 ```{r fig-HCRdiagram, fig.cap = capHCRdiagram, fig.asp = 1.1}
 capHCRdiagram <- paste0(
