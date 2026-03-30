@@ -189,14 +189,62 @@ makeOMStatsTable <- function(
       'DDMstats.csv'),
     predMFile = here::here(
       'Models/Sims/sim_1SpredMOM_minEMP_full',
-      'oneStockPredMStats.csv')
+      'oneStockPredMStats.csv'),
+    sim3Sobj = sim3S_MP1,
+    fit3Sobj = fit3S
 )
 {
   ddm  <- read.csv(file = ddmFile, stringsAsFactors = FALSE)
-  p1s  <- read.csv(file = predMFile, stringsAsFactors = FALSE)
+  p1s  <- read.csv(file = predMFile,
+                    stringsAsFactors = FALSE)
 
   fmt_pct <- function(x) paste0(round(x * 100, 0), "\\%")
   fmt_t   <- function(x) format(round(x, 0), big.mark = ",")
+
+  # --- Compute 3S aggregate stats (first 10 yrs) ---
+  good <- sim3Sobj$goodReps
+  tMP  <- sim3Sobj$om$tMP
+  nP   <- sim3Sobj$om$nP
+  t10  <- min(tMP + 9, sim3Sobj$om$nT)
+
+  # Aggregate SSB (herring, s=1)
+  SB_ipt      <- sim3Sobj$om$SB_ispt[good, 1, , , drop = FALSE]
+  dim(SB_ipt) <- c(sum(good), nP, sim3Sobj$om$nT)
+  SB_it       <- apply(X = SB_ipt, MARGIN = c(1, 3),
+                       FUN = sum, na.rm = TRUE)
+
+  # B0 and LRP
+  B0_3S  <- sum(
+    fit3Sobj$repOpt$refPts$refCurves$SBeq_pf[, 1])
+  LRP_3S <- 0.3 * B0_3S
+  pLRP_3S <- mean(SB_it[, tMP:t10] > LRP_3S)
+
+  # Commercial catch (gears 1:3)
+  C_it <- apply(
+    X = sim3Sobj$om$C_ispft[good, 1, , 1:3, , drop = FALSE],
+    FUN = sum, MARGIN = c(1, 5))
+  avgC_i <- apply(
+    X = C_it[, tMP:t10, drop = FALSE],
+    FUN = mean, MARGIN = 1)
+
+  # SOK
+  sokF   <- which(sim3Sobj$om$fleetType_f == 2)
+  SOK_it <- apply(
+    X = sim3Sobj$om$C_ispft[good, 1, , sokF, , drop = FALSE],
+    FUN = sum, MARGIN = c(1, 5))
+  avgSOK_i <- apply(
+    X = SOK_it[, tMP:t10, drop = FALSE],
+    FUN = mean, MARGIN = 1)
+
+  # Openings (first 10 yrs)
+  commYrs_it <- C_it
+  commYrs_it[commYrs_it > 0] <- 1
+  nYrs_i <- apply(
+    X = commYrs_it[, tMP:t10, drop = FALSE],
+    FUN = sum, MARGIN = 1)
+
+  # p650
+  pC650_3S <- mean(C_it[, tMP:t10] > 0.65)
 
   df <- data.frame(
     Metric = c(
@@ -217,6 +265,12 @@ makeOMStatsTable <- function(
       fmt_t(p1s$avgSOK_t),
       as.character(p1s$nYrsComm),
       fmt_pct(p1s$pCtGt650t)),
+    "3S-predM" = c(
+      fmt_pct(pLRP_3S),
+      fmt_t(median(avgC_i) * 1000),
+      fmt_t(median(avgSOK_i) * 1000),
+      as.character(round(median(nYrs_i))),
+      fmt_pct(pC650_3S)),
     stringsAsFactors = FALSE,
     check.names = FALSE
   )
@@ -228,13 +282,15 @@ makeOMStatsTable <- function(
     escape   = FALSE,
     col.names = c("Metric",
                    "SISCAH-DDM",
-                   "SISCAH-1S-Pred"),
+                   "SISCAH-1S-Pred",
+                   "SISCAH-3S-Pred"),
     caption  = paste0(
-      "Aggregate performance metrics under the ",
-      "\\emph{SISCAH-DDM} and \\emph{SISCAH-1S-Pred} ",
+      "Aggregate performance metrics under the three ",
       "operating models. LRP is $0.3 B_0$ where $B_0$ ",
       "is the OM-specific unfished biomass. ",
-      "CO1 threshold is 75\\%.")
+      "Conservation objective: pLRP $\\geq$ 75\\%. ",
+      "3S-Pred metrics computed over the first 10 ",
+      "projection years for comparability.")
   ) |>
     kableExtra::kable_styling(
       latex_options = c("hold_position"),

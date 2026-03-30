@@ -22,6 +22,7 @@ csl-refs: true
 numbersections: true
 link-citations: true
 bibliography: bib/library.bib
+csl: csl/fisheries-research.csl
 
 # Any extra LaTeX code for the header:
 header-includes:

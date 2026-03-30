@@ -4,7 +4,7 @@ This section describes the closed-loop simulation framework
 developed for testing a proposed WCVI herring re-opening
 procedure. The three operating models used to represent alternative
 hypotheses about WCVI herring population dynamics are
-described first, followed by the management procedure,
+described first, followed by the re-opening procedure,
 including the assessment model, the harvest control rule,
 and the spatial TAC distribution methods. The simulation
 design and performance metrics are described last.
@@ -27,7 +27,8 @@ natural mortality, where natural mortality rates increase at
 low stock sizes. Under this model, unfished biomass is
 approximately 42 kt, $B_{MSY}$ is approximately 17.35 kt,
 the limit reference point (LRP) is $0.3 B_0 \approx 13.5$ kt,
-and the maximum sustainable yield is approximately 1.6 kt.
+and the maximum sustainable yield is approximately
+1.6 kt (Figure \@ref(fig:fig-yieldCurve)).
 
 ```{r fig-yieldCurve, fig.cap = capYieldCurve}
 capYieldCurve <- paste0(
@@ -62,21 +63,26 @@ project [@lfr2025_NTC], splits the WCVI herring population
 into three independent stocks corresponding to Stat Areas 23, 24,
 and 25. Each stock is fit independently to Stat Area-level catch,
 spawn index, and age composition data. Predation mortality
-is included as in *SISCAH-1S-Pred*, with coast-wide predator
-consumption distributed among Stat Areas in proportion to vulnerable
-biomass.
+is included as in *SISCAH-1S-Pred*, with WCVI-wide
+predator consumption distributed among Stat Areas in
+proportion to vulnerable biomass. Additionally, the
+*SISCAH-3S-Pred* model incorporates age-dependent
+fecundity via an adjustment to the historical spawn
+index data (see §Limitations).
 
 The aggregate unfished biomass under *SISCAH-3S-Pred* is
 approximately 17.1 kt, which is close to the $B_{MSY}$
 estimate from the *SISCAH-DDM* model. This means that the
-minimum escapement reference point ($B_{ref} = B_{MSY|DDM}$)
+minimum escapement reference point ($B_{ref} \approx B_{MSY|DDM}$) 
 used in the harvest control rule is near the operating model's
 unfished biomass level, leading to frequent fishery closures.
 
 Using *SISCAH-3S-Pred* as an operating model while the
-management procedure assumes a single stock creates a
-structural mismatch that tests the robustness of the MP to
-unrecognised spatial structure and predation.
+re-opening procedure assumes a single stock creates a
+structural mismatch that tests the robustness of the RP
+to unrecognised spatial structure and predation. Historical 
+spawning biomass trajectories from all three OMs are compared in
+Figure \@ref(fig:fig-histSSB).
 
 ```{r fig-histSSB, fig.cap = capHistSSB, fig.asp = 0.65}
 capHistSSB <- paste0(
@@ -90,24 +96,25 @@ capHistSSB <- paste0(
 plotHistSSB(DDMfit = DDMfit, fit1S = fit1S, fit3S = fit3S)
 ```
 
-## Management procedure
+## Re-opening procedure
 
-The management procedure consists of two steps: (i) an
-aggregate stock assessment that determines a coastwide TAC,
-and (ii) a spatial distribution step that distributes the TAC
-among Stat Areas.
+The re-opening procedure (RP) consists of two steps:
+(i) an aggregate stock assessment that determines a TAC
+for the entire WCVI stock assessment region (SAR) consistent
+with DFO policy, and (ii) a spatial distribution step that 
+distributes the SAR TAC among Stat Areas.
 
 ### Step 1: aggregate assessment and harvest control rule
 
 In the first step, data from all three Stat Areas are
-aggregated into a single coastwide data set. Spawn indices
+aggregated into a single WCVI data set. Spawn indices
 are summed across Stat Areas, catches are summed, and
 weight-at-age is averaged. A single-stock *SISCAH-DIM*
 (density-independent mortality) assessment model is then
 fit to the aggregated data to estimate current spawning
 biomass. The *SISCAH-DIM* model is the adopted assessment
-model for BC Herring stock assessment regions (SARs) that
-currently have management procedures and prosecute TACs.
+model for BC Herring SARs that have active fisheries 
+with TACs set via management procedures.
 
 The harvest control rule (HCR) is a minimum escapement
 rule with two parameters:
@@ -144,7 +151,8 @@ above $B_{ref}$, the surplus rule binds and the implied
 harvest rate is below $U_{ref}$; at higher biomass the
 harvest rate cap binds and TAC grows linearly with biomass.
 The effective harvest rate is
-$U_t = \text{TAC}_t / \hat{B}_t$.
+$U_t = \text{TAC}_t / \hat{B}_t$
+(Figure \@ref(fig:fig-HCRdiagram)).
 
 ```{r fig-HCRdiagram, fig.cap = capHCRdiagram, fig.asp = 1.1}
 capHCRdiagram <- paste0(
@@ -156,7 +164,7 @@ capHCRdiagram <- paste0(
 plotHCRDiagram(Bref = 17.35, Uref = 0.0847)
 ```
 
-### Step 2: spatial TAC distribution {#sec:allocation}
+### Step 2: spatial TAC distribution {#sec:distribution}
 
 In the second step, the aggregate TAC is distributed among
 Stat Areas. Three distribution methods are tested:
@@ -178,30 +186,34 @@ Stat Areas. Three distribution methods are tested:
    reflect operational preferences or access considerations.
 
 Within each Stat Area, the TAC is further distributed among
-commercial fleets (seine roe, gillnet, and spawn-on-kelp or
-bough) according to fixed fleet proportions.
+commercial fleets (seine roe, gillnet, and
+spawn-on-bough (SOB)) according to fixed fleet
+proportions.
 
 ## Simulation design
 
 Closed-loop simulations project the operating model forward
 from the end of the historical period (2023) for 10 years under 
-the management procedure described above. Simulations
-apply the following steps in each projection year
+the re-opening procedure described above. Simulations
+apply the following steps in each projection year:
 
-1. Simulate observational data from the true population state, 
-   including a simulated blended spawn index with randomised
-   dive/surface survey ratios and log-normal observation
-   errors parameterised from historical residuals, as well
-   as catch-at-age data. If in a spatial OM, aggregate 
-   observation data across statistical areas.
-2  Fit the single-stock SISCAH-DIM assessment model;
-3. Apply the harvest control rule to SISCAH-DIM estimates to 
-   derive aggregate TAC. If in a spatial OM, TAC is distributed
-   among Stat Areas using the chosen distribution method;
-5. Remove catch from the simulated population (either WCVI scale
-   or individual statistical areas);
-6. Advance the OM population forward by one year, including
-   recruitment, natural mortality, and predation.
+1. Simulate observational data from the true population
+   state, including a simulated blended spawn index with
+   randomised dive/surface survey ratios and log-normal
+   observation errors parameterised from historical
+   residuals, as well as catch-at-age data. If in a
+   spatial OM, aggregate observation data across
+   statistical areas.
+2. Fit the single-stock *SISCAH-DIM* assessment model.
+3. Apply the harvest control rule to *SISCAH-DIM*
+   estimates to derive aggregate TAC. If in a spatial
+   OM, distribute TAC among Stat Areas using the chosen
+   distribution method.
+4. Remove catch from the simulated population (either
+   WCVI scale or individual statistical areas).
+5. Advance the OM population forward by one year,
+   including recruitment, natural mortality, and
+   predation.
 
 Simulations are repeated across 100 stochastic replicates
 to capture uncertainty in future recruitment, basal mortality, 
@@ -251,3 +263,7 @@ are only relevant under the spatially structured
 three-stock OM only. Aggregate performance under the
 single-stock OMs is evaluated qualitatively from simulation
 projection figures.
+
+While some specific Nuu-chah-nulth objectives have been articulated 
+in the past, results under the current OMs are not able to 
+measure performance against those.

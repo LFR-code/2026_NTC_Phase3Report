@@ -17,7 +17,7 @@
 This appendix briefly describes the *SISCAH-3S-Pred*
 model. The *3S-Pred* model is fitted to WCVI Herring
 spawn index, catch, and catch-at-age data disaggregated
-to the Stat Area level, as well as coast-wide predator
+to the Stat Area level, as well as WCVI-wide predator
 consumption estimates. The model is described over three
 tables, including notation
 (Table \ref{tab:SISCAnotation}), model parameters and
@@ -44,7 +44,7 @@ de Fuca strait during survey effort
 [@mcmillan2022hbSeasonalAbundance].
 
 The second change is that bio-energetic predator
-consumption estimates are provided at a coastwide level,
+consumption estimates are provided at the WCVI level,
 rather than the same Stat Area level as the herring
 populations. Finer spatial detail on bio-energetic
 estimates is not possible, as the consumption is estimated
@@ -52,7 +52,8 @@ from models of predator abundance/biomass, and there are
 no data available to estimate predator populations at a
 finer scale than the WCVI coast. Therefore, predator
 consumption is provided to *SISCAH-3S-Pred* as a mixed
-coastwide consumption, which is then split among the three
+WCVI-wide consumption, which is then split among the
+three
 Stat Areas in proportion to the vulnerable biomass
 (Table \@ref(tab:SISCAprocModelEqns), M.1--M.3). This
 approach assumes that inshore predators split foraging
@@ -92,13 +93,13 @@ notationTable <- tibble::tribble(
     "$g$",                "$1,2,\\dots,14$",  "Gear index for (1) reduction, (2) seine-roe, and (3) gillnet fisheries,",
     NA, NA,                                   "(4) Surface and (5) dive spawn survey indices, (6) the closed", 
     NA, NA,                                   "pond SOKB fishery, (7) Hake less than 50 cm, (8) Hake greater",
-    NA, NA,                                   "than 50 cm, (9) Harbor Seals, (10) Stellar Sea Lions,",
+    NA, NA,                                   "than 50 cm, (9) Harbour Seals, (10) Steller Sea Lions,",
     NA, NA,                                   "(11) Winter Humpback Whale, (12) Spring Humpback Whale,",
     NA, NA,                                   "(13) Summer Humpback Whale, and (14) Fall Humpback Whale.",
     NA,NA,NA,
     "$B_{0,p}$",            NA,               "Unfished spawning stock biomass in area $p$",
     NA,NA,NA,
-    "$\\mbox{eggs}_{0,p}$",  NA,              "Equilibirum unfished egg production in area $p$",
+    "$\\mbox{eggs}_{0,p}$",  NA,              "Equilibrium unfished egg production in area $p$",
     NA,NA,NA,
     "$\\mbox{eggs}_{p,t}$", NA,               "The number of eggs released by area $p$ spawners in year $t$",
     NA,NA,NA,
@@ -171,7 +172,7 @@ notationTable <- tibble::tribble(
     NA,NA,NA,
     "$N_{a,p,t + \\delta_g}$",NA,             "Total numbers-at-age $a$ in area $p$ at fractional time-step $t + \\delta_g$",
     NA,NA,NA,
-    "$N_{a,p,g,t + \\delta_g}$",NA,           "Total numbers-at-age $a$ in area $p$ vulnerable to fishery/predator $g$x",
+    "$N_{a,p,g,t + \\delta_g}$",NA,           "Total numbers-at-age $a$ in area $p$ vulnerable to fishery/predator $g$",
     NA,                   NA,                 "at fractional time-step $t + \\delta_g$",
     NA,NA,NA,
     "$N^{spawn}_{a,p,t}$",          NA,       "Total numbers-at-age $a$ in area $p$ in year $t$ at spawning time",

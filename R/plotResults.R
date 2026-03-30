@@ -409,10 +409,31 @@ plotRetroFits <- function( obj = simDDM, iRep = 1 )
   survIdx <- obj$mp$data$I_ispft[iRep, 1, 1, 5, ]   # length nT
 
   # Reference points
-  Bref <- c(obj$ctlList$mp$hcr$Bref_p,
-            obj$ctlList$mp$hcr$Bref_s)[1]
-  B0   <- obj$rp[[1]]$B0_sp[1]
+  Bref <- 17.35
+  if (!is.null(obj$ctlList$refPts$B0))
+    B0 <- obj$ctlList$refPts$B0
+  else
+    B0 <- sum(
+      obj$ctlList$opMod$histRpt$refPts$refCurves$SBeq_pf[
+        , 1])
   LRP  <- 0.3 * B0
+
+  # Aggregate catch (fishing fleets only, s=1)
+  nF       <- dim(obj$om$C_ispft)[4]
+  fishF    <- 1:3
+  sokF     <- which(obj$om$fleetType_f == 2)
+  allFishF <- c(fishF, sokF)
+  C_raw    <- obj$om$C_ispft[iRep, 1, , , , drop = FALSE]
+  dim(C_raw) <- c(nP, nF, nT)
+  C_t      <- apply(
+    X = C_raw[, allFishF, , drop = FALSE],
+    MARGIN = 3, FUN = sum, na.rm = TRUE)
+  TAC_raw  <- obj$mp$hcr$TAC_ispft[iRep, 1, , , ,
+                                    drop = FALSE]
+  dim(TAC_raw) <- c(nP, nF, nT)
+  TAC_t    <- apply(
+    X = TAC_raw[, allFishF, , drop = FALSE],
+    MARGIN = 3, FUN = sum, na.rm = TRUE)
 
   ymax <- max(SBtrue, retroSB_tt, na.rm = TRUE) * 1.15
 
@@ -426,11 +447,22 @@ plotRetroFits <- function( obj = simDDM, iRep = 1 )
     las  = 1
   )
 
+  # Catch bars (grey fill, black outline for TAC)
+  rect(xleft   = yrs - 0.4, xright = yrs + 0.4,
+       ybottom = 0,          ytop   = C_t,
+       col = "grey85", border = NA)
+  rect(xleft   = yrs[tMP:nT] - 0.4,
+       xright  = yrs[tMP:nT] + 0.4,
+       ybottom = 0,
+       ytop    = TAC_t[tMP:nT],
+       col = NA, border = "black")
+
   # Reference lines
-  abline(h = B0,   lty = 3, col = "grey50",  lwd = 1.2)
-  abline(h = Bref, lty = 2, col = "blue",    lwd = 1.5)
-  abline(h = LRP,  lty = 2, col = "red",     lwd = 1.2)
-  abline(v = yrs[tMP] - 0.5, lty = 2, col = "black", lwd = 0.8)
+  abline(h = B0,   lty = 2, col = "darkgreen", lwd = 1.5)
+  abline(h = Bref, lty = 2, col = "blue",     lwd = 1.5)
+  abline(h = LRP,  lty = 2, col = "red",      lwd = 1.5)
+  abline(v = yrs[tMP] - 0.5, lty = 2,
+         col = "black", lwd = 0.8)
 
   # Grey retrospective assessment lines
   for (tt in seq_len(pT))
@@ -456,11 +488,16 @@ plotRetroFits <- function( obj = simDDM, iRep = 1 )
     legend = c("True SSB (OM)",
                "Final assessment",
                "Earlier assessments",
-               "Survey index (scaled)"),
-    col    = c("red", "steelblue", "grey60", "black"),
-    lty    = c(1, 1, 1, NA),
-    pch    = c(NA, NA, NA, 16),
-    lwd    = c(2.5, 2.5, 1, NA),
+               "Survey index (scaled)",
+               "Catch",
+               expression(B[0]),
+               expression(B[ref]),
+               "LRP"),
+    col    = c("red", "steelblue", "grey60", "black",
+               "grey85", "darkgreen", "blue", "red"),
+    lty    = c(1, 1, 1, NA, NA, 2, 2, 2),
+    pch    = c(NA, NA, NA, 16, 15, NA, NA, NA),
+    lwd    = c(2.5, 2.5, 1, NA, NA, 1.5, 1.5, 1.5),
     cex    = 0.8
   )
 } # END plotRetroFits()

@@ -1,7 +1,7 @@
 # Discussion
 
 This report describes research activities for the third year
-of the ?aayaaqa (Herring) Spawn Dynamics collaboration.
+of the ?aayaaqa (Herring) Spawn Dynamics project.
 Building on the three-stock model with predation
 (*SISCAH-3S-Pred*) developed in Phase 2, a closed-loop
 simulation framework was developed and used to test a
@@ -10,15 +10,15 @@ herring under three operating models of increasing ecological
 complexity. The *SISCAH-3S-Pred* model serves as a robustness
 test, representing a scenario where the true population is
 spatially structured and subject to explicit predation
-mortality while the management procedure treats WCVI herring
+mortality while the re-opening procedure treats WCVI herring
 as a single stock.
 
 ## Implications of operating model choice
 
 The choice of operating model has a much larger effect on
-expected MP performance than the choice of spatial TAC
+expected RP performance than the choice of spatial TAC
 distribution method. Under the *SISCAH-DDM* operating model,
-the MP performs as designed, maintaining biomass above
+the RP performs as designed, maintaining biomass above
 reference levels and producing catches near the maximum
 sustainable yield. Under the *SISCAH-1S-Pred* OM, catches
 are reduced and biomass settles near the minimum escapement
@@ -45,14 +45,15 @@ Including predation explicitly reduces the expected unfished
 biomass from approximately 42 kt (DDM) to approximately
 26 kt (1S-Pred) to approximately 17 kt (3S-Pred). Since the
 minimum escapement reference point is derived from the DDM
-model ($B_{ref} = B_{MSY|DDM} \approx 17.35$ kt), it
+model ($B_{ref} \approx B_{MSY|DDM} \approx 17.35$ kt),
+it
 becomes increasingly difficult to open the fishery as the
 assumed unfished biomass decreases.
 
 ## Spatial distribution
 
 The spatial TAC distribution method has very little effect on
-MP performance under any operating model tested. This is
+RP performance under any operating model tested. This is
 partly because catches are small or zero under the
 predation-based OMs, so the method used to distribute them
 is inconsequential. Even under the DDM OM where catches are
@@ -69,7 +70,7 @@ the operating models and reference points tested here.
 
 ## Assessment model performance
 
-The *SISCAH-DIM* assessment model used in the MP performs
+The *SISCAH-DIM* assessment model used in the RP performs
 well under the DDM operating model, where the structural
 assumptions are well matched. Under the predation-based
 OMs, the DIM formulation has more flexibility to track high
@@ -84,7 +85,7 @@ status.
 The over-estimation bias is more pronounced under the
 *SISCAH-1S-Pred* OM than under the *SISCAH-3S-Pred* OM.
 Under the three-stock OM, the flat biomass trajectory during
-the projection period  the extent to which the
+the projection period limits the extent to which the
 assessment can over-estimate, because indices provide a
 strong signal of low and stable abundance. The implication
 is that assessment model performance improves when the
@@ -96,7 +97,8 @@ is mis-specified.
 Several limitations of the current analysis should be noted.
 
 **Reference points**: the minimum escapement reference point
-used here ($B_{ref} = B_{MSY|DDM}$) is derived from the DDM
+used here ($B_{ref} \approx B_{MSY|DDM}$) is derived from
+the DDM
 operating model. If the true system dynamics are better
 represented by a predation model, then $B_{MSY}$ would be
 lower and the HCR may perform differently. Future work could
@@ -141,20 +143,26 @@ except for Hake which use an age-structured model.
 These projections assume that predator populations will
 stabilise near carrying capacity, which appears reasonable
 for most species but remains uncertain for others. For
-example, recent estimates of Pacific Hake biomass have
-reached very low levels [@jtc2025hake] and it is
-unclear when biomass will recover and to what level.
-Therefore, these simulations likely over-estimate the
-impact of Hake predation on WCVI Herring. Similarly,
+example, the predation OMs project Pacific Hake
+abundance varying around an equilibrium level, but
+recent Hake assessments indicate that Canadian Hake
+biomass has declined substantially [@jtc2025hake].
+The simulations therefore likely over-estimate Hake
+predation relative to current conditions. Even if
+Hake recover, fishing mortality on Hake would likely
+resume, limiting the predation impact on herring.
+Similarly,
 while North Pacific Humpback Whale populations show
 recent signs of stabilising abundance
 [@cheeseman2024_hbNt], it is still too early to predict
 the long-term abundance level.
-Changes in abundance of significant predators would directly 
-affect herring productivity and the expected performance of 
-harvest control rules. Continued predator diet sampling and 
-updated bio-energetic models as new predator abundance estimates 
-become available would help reduce this source of uncertainty.
+Changes in abundance of significant predators would
+directly affect herring productivity and the expected
+performance of harvest control rules. Continued predator
+diet sampling would help constrain consumption estimates.
+Updating bio-energetic models as new abundance estimates
+become available would reduce uncertainty in future
+predator trajectories.
 
 **Additional distribution methods**: only three distribution
 methods were tested. Other approaches, such as distributing
@@ -165,22 +173,35 @@ work.
 
 ## Conclusions
 
-The closed-loop simulation framework developed in this phase
-provides a tool for evaluating WCVI herring management
-procedures under a range of ecological assumptions. The key
-finding is that the performance of the proposed minimum
-escapement rule is driven primarily by assumptions about
-natural and predation mortality, rather than by the spatial
-distribution of catch. Under operating models that include
-explicit predation, the fishery would be closed most of the
-time because biomass is near or below the minimum escapement
-level derived from the standard DDM assessment. This result
+The closed-loop simulation framework developed in this
+phase provides a tool for evaluating WCVI herring
+re-opening procedures under a range of ecological
+assumptions. Under the standard DDM operating model,
+the RP meets the conservation objective (pLRP = 96\%,
+exceeding the 75\% threshold). The key finding is that
+performance is driven primarily by assumptions about
+natural and predation mortality, rather than by the
+spatial distribution of catch. Under operating models
+that include explicit predation, the fishery would be
+closed most of the time because biomass is near or
+below the minimum escapement level derived from the
+standard DDM assessment. This result
 reinforces the importance of resolving uncertainty about
 predation mortality for WCVI herring management, and
-demonstrates the value of testing management procedures
+demonstrates the value of testing re-opening procedures
 against robustness scenarios that include alternative
 ecological hypotheses. Among the three distribution methods
 tested, differences in performance were negligible under
 all operating models, suggesting that the choice of spatial
 TAC distribution method is not a priority concern under
-current productivity assumptions.
+current productivity assumptions. While specific
+Nuu-chah-nulth objectives have been articulated,
+the current operating models do not yet produce outputs
+at scales that allow direct evaluation against those
+objectives. Future work should explore RPs that produce
+results at scales that reflect Nuu-chah-nulth
+priorities for herring. Other scales, such as the 9-stock
+model explored in Phase 2, remain important for monitoring 
+spawn dynamics at finer spatial scales than the assessment 
+model considers, similar to an exceptional circumstances 
+framework.

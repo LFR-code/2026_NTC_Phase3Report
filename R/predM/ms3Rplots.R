@@ -7335,9 +7335,10 @@ plotRetroSBagg <- function( obj = blob, iRep = 1, Ct = TRUE,
   {
     idxFleet      <- obj$ctlList$mp$assess$idxFleets[1]
     # Aggregated combined index: sum blended index across PFMAs [nT]
-    I_agg_t       <- apply(
-                       obj$mp$data$I_ispft[iRep, 1, 1:nP, idxFleet, ],
-                       2, sum, na.rm = TRUE)
+    I_raw         <- obj$mp$data$I_ispft[
+      iRep, 1, 1:nP, idxFleet, , drop = FALSE]
+    dim(I_raw)    <- c(nP, nT)
+    I_agg_t       <- colSums(I_raw)
     I_agg_t[I_agg_t <= 0] <- NA
     # Combined q from the final projection year's aggregate SISCA fit
     qComb_final_t <- obj$mp$assess$retroqComb_agg_itt[iRep, pT, ]
@@ -7390,32 +7391,65 @@ plotRetroSBagg <- function( obj = blob, iRep = 1, Ct = TRUE,
 
   abline( v = yrs[tMP] - 0.5, lty = 2, lwd = 0.5 )
 
+  # Reference lines
+  B0_agg  <- sum(
+    obj$ctlList$opMod$histRpt$refPts$refCurves$SBeq_pf[
+      , 1])
+  Bref    <- 17.35
+  LRP_agg <- 0.3 * B0_agg
+  abline(h = B0_agg,  lty = 2, col = "darkgreen", lwd = 1.5)
+  abline(h = Bref,    lty = 2, col = "blue",     lwd = 1.5)
+  abline(h = LRP_agg, lty = 2, col = "red",      lwd = 1.5)
+
   mtext(side = 1, text = "Year",                            line = 2.5, font = 2)
-  mtext(side = 2, text = "Aggregate Spawning Biomass (kt)", line = 3.5, font = 2)
-  mtext(side = 3, text = "Retrospective SISCA aggregate fits (Herring coastwide)",
+  mtext(side = 2, text = "Spawning Biomass (kt)", line = 3.5, font = 2)
+  mtext(side = 3,
+        text = "Retrospective estimates of WCVI Herring Spawning Biomass (SISCAH-DIM)",
         line = 0.5, font = 2)
   mtext(outer = FALSE, side = 1, adj = 1, line = 3.5, cex = 0.6,
         text = stamp, col = "grey60")
 
+  refLeg <- list(
+    legend = c(expression(B[0]), expression(B[ref]), "LRP"),
+    col    = c("darkgreen", "blue", "red"),
+    lwd    = c(1.5, 1.5, 1.5),
+    lty    = c(2, 2, 2),
+    pch    = c(NA, NA, NA))
+
   idxLegend <- if( !is.null(scaledI_t) )
                  list( legend = c("OM truth", "SISCA (final)", "SISCA (earlier)",
-                                  "Catch", "Index/q"),
+                                  "Catch", "Index/q",
+                                  refLeg$legend),
                        col    = c("red", "dodgerblue", "grey50",
-                                  "grey75", "darkgreen"),
-                       lwd    = c(2, 2, 1, NA, NA),
-                       pch    = c(NA, NA, NA, 15, 21),
-                       pt.cex = c(NA, NA, NA, 1.5, 0.9) )
+                                  "grey75", "darkgreen",
+                                  refLeg$col),
+                       lwd    = c(2, 2, 1, NA, NA,
+                                  refLeg$lwd),
+                       lty    = c(1, 1, 1, NA, NA,
+                                  refLeg$lty),
+                       pch    = c(NA, NA, NA, 15, 21,
+                                  refLeg$pch),
+                       pt.cex = c(NA, NA, NA, 1.5, 0.9,
+                                  NA, NA, NA) )
                else
                  list( legend = c("OM truth", "SISCA (final)", "SISCA (earlier)",
-                                  "Catch"),
-                       col    = c("red", "dodgerblue", "grey50", "grey75"),
-                       lwd    = c(2, 2, 1, NA),
-                       pch    = c(NA, NA, NA, 15),
-                       pt.cex = c(NA, NA, NA, 1.5) )
+                                  "Catch",
+                                  refLeg$legend),
+                       col    = c("red", "dodgerblue", "grey50", "grey75",
+                                  refLeg$col),
+                       lwd    = c(2, 2, 1, NA,
+                                  refLeg$lwd),
+                       lty    = c(1, 1, 1, NA,
+                                  refLeg$lty),
+                       pch    = c(NA, NA, NA, 15,
+                                  refLeg$pch),
+                       pt.cex = c(NA, NA, NA, 1.5,
+                                  NA, NA, NA) )
   legend( "topleft", bty = "n",
           legend = idxLegend$legend,
           col    = idxLegend$col,
           lwd    = idxLegend$lwd,
+          lty    = idxLegend$lty,
           pch    = idxLegend$pch,
           pt.cex = idxLegend$pt.cex )
 }

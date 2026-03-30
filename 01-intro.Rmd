@@ -1,17 +1,35 @@
 # Introduction
 
 The ?aayaaqa (Herring) Spawn Dynamics project is a
-multi-year collaboration between Uu-a-thluk Fisheries and
-Landmark Fisheries Research focused on developing a
-Nuu-chah-nulth approach to ecosystem-based fisheries
-management (EBFM) for Pacific Herring on the West Coast
-of Vancouver Island (WCVI). In the first year of the project
-(Phase 1), empirical analyses of data collected during herring
-spawn events showed that egg production per gram of body
-weight (fecundity) increases with age, and that older herring
-spawn earlier in the season [@lfr2024_NTC]. A conceptual
-simulation model was also developed to represent WCVI herring
-population dynamics across nine Nuu-chah-nulth (NCN) spawning
+multi-year project led by Uu-a-thluk Fisheries, with
+technical support from Landmark Fisheries Research. The
+project has been focused on developing a Nuu-chah-nulth approach 
+to ecosystem-based fisheries management (EBFM) for Pacific
+Herring on the West Coast of Vancouver Island (WCVI).
+
+This report summarises work during Phase 3 of the ?aayaaqa
+(Herring) spawn dynamics project. The goal of this work is to 
+evaluate potential re-opening procedures for the WCVI herring 
+fishery in closed loop feedback simulations, also known as 
+Management Strategy Evaluation. The evaluation is aimed at 
+understanding whether re-openings can align with 
+Nuu-chah-nulth goals and objectives, while also meeting
+policy requirements of Fisheries and Oceans, Canada (DFO). 
+While policy requires that re-opening procedures will perform well
+at the stock assessment region (SAR) level, the benefits for 
+Nuu-chah-nulth resource users and owners are at a more local scale 
+relevant to their needs. Building on the Phase 2 recommendation, 
+the *SISCAH-3S-Pred* model is used as an operating model
+(OM) within a closed-loop simulation framework to test
+a potential WCVI herring re-opening procedure.
+
+Earlier phases of the project laid the foundation for this work.
+The first year of the project (Phase 1) focused on empirical analyses 
+of data collected during herring spawn events. Those analyses showed 
+that egg production per gram of body weight (fecundity) increases with 
+age, and that older herring spawn earlier in the season [@lfr2024_NTC]. 
+A conceptual simulation model was also developed to represent WCVI herring
+population dynamics across nine Nuu-chah-nulth spawning
 areas.
 
 In the second year (Phase 2), modelling efforts expanded the
@@ -27,23 +45,16 @@ as the nine-stock model was largely insensitive to its
 additional spatial and temporal detail, reflecting analyst
 assumptions rather than inherent properties of the system.
 The nine-stock model remains useful in an empirical
-capacity, similar to an exceptional circumstances
-framework, for monitoring spawn dynamics at finer spatial
-scales than the assessment model considers.
+capacity for monitoring spawn dynamics at finer spatial
+scales than the assessment model considers, similar to an 
+exceptional circumstances framework.
 
-The present working paper describes activities in the third
-year (Phase 3) of the project. Building on the Phase 2
-recommendation, we use the *SISCAH-3S-Pred* model as an
-operating model (OM) within a closed-loop simulation framework to
-test a potential WCVI herring re-opening procedure and understand
-whether it aligns with the goals and objectives of the 
-Nuu-chah-nulth.
 
 ## Management context
 
 WCVI herring commercial fisheries have been closed since 2006.
-A re-opening of the fishery would require a management
-procedure (MP) consistent with the DFO Precautionary
+A re-opening of the fishery would require a re-opening
+procedure (RP) consistent with the DFO Precautionary
 Approach framework [@dfo2009pa] that defines how stock
 status is assessed and how a total allowable catch (TAC)
 is determined [@dfo2024_herringIFMP]. Current BC
@@ -56,34 +67,44 @@ and subject to higher natural mortality due to predation than is
 assumed by the standard density-dependent mortality (DDM) model 
 used in DFO assessments.
 
-Management strategy evaluation is a structured decision-making 
-approach used by managers, First Nations, stakeholders, and 
-science to measure performance of fisheries management 
-procedures against pre-determined objectives in the presence 
-of uncertainty. Simulations are driven by driven by operating 
-models, which represent alternative states of nature and 
-generate uncertain fishery data
+<!-- TODO: Review MSE definition (Sean: tailor to NTC
+herring context; clean up incomplete edits) -->
+Management strategy evaluation (MSE) is a structured decision-making 
+approach designed to measure the performance of fisheries management 
+procedures against pre-determined objectives in the presence of 
+uncertainty [@butterworth1999experiences; @punt2016management; 
+@de-la-Mare1998Tidier-fisherie]. Objectives and their associated metrics are agreed upon
+by managers, First Nations,
+fishery stakeholders, and scientists. Operating models are then used to 
+represent alternative states of nature and generate uncertain fishery 
+dynamics and data. Procedures are tested in a feedback loop: data are 
+generated by the OM, the assessment model estimates biomass, a harvest 
+control rule (HCR) sets a total allowable catch (TAC) based on 
+biomass estimates, and catch is removed from the simulated population
+via fishing mortality. This process is repeated over a projection period 
+and the resulting metrics for conservation and fishery objectives are 
+used to rank performance.
 
-A robust MP should perform acceptably not only under the
-assumptions of the assessment model it is paired with, but
-also under alternative hypotheses about population dynamics.
-
-We used Management St simulation-based approach for testing the MP under 
-three operating models (OMs) represents the "true" state of the
-fishery system, and the MP is applied in a feedback loop where
-data are generated by the OM, the assessment model estimates
-stock status from those data, a harvest control rule (HCR)
-sets the TAC, and the OM is updated with the resulting catch.
-The process is repeated over a projection period, and MP
-performance is evaluated against conservation and fishery
-objectives.
+A robust RP should perform acceptably not only under the
+assumptions of the assessment model it is paired with,
+but also under alternative hypotheses about population
+dynamics. The alternative hypotheses here are represented
+by the standard DFO *SISCAH-DDM* OM, and the *SISCAH-1S-Pred* 
+and *SISCAH-3S-Pred* OMs developed as part of the NTC-BCSRIF 
+project, which include explicit predation mortality and, 
+for the latter, a finer spatial resolution of population dynamics. 
+The finer resolution is a first step towards a framework that 
+can test performance of RPs against fishery objectives that have 
+been identified by the Nuu-chah-nulth, including but not limited 
+to spawn presence/timing in specific bays, local harvest access, 
+and persistence of spawn across years.
 
 ## Objectives
 
-In this phase, we develop a closed-loop simulation framework
-and use it to test a proposed minimum escapement harvest
-control rule for WCVI herring under three operating models of
-increasing ecological complexity:
+In this phase, a closed-loop simulation framework is
+developed and used to test a proposed minimum escapement
+harvest control rule for WCVI herring under three
+operating models of increasing ecological complexity:
 
 1. The *SISCAH-DDM* density-dependent mortality model, which
    represents the assumptions currently used in DFO stock
@@ -98,13 +119,14 @@ increasing ecological complexity:
    stock structure.
 
 The *SISCAH-3S-Pred* model serves as a robustness test
-operating model. When the MP assumes a single panmictic stock
-but the true population is spatially structured, we can
-evaluate how well the MP protects individual Stat Area stocks
-and how spatial TAC allocation methods affect outcomes.
-We test three allocation methods for distributing the
-aggregate TAC among Stat Areas: (i) proportional to recent spawn
-indices, (ii) proportional to recent catches, and
-(iii) allocating the entire TAC to Stat Area 23 (Barkley Sound).
+operating model. When the RP assumes a single panmictic
+stock but the true population is spatially structured,
+the MSE can evaluate how well the RP protects individual
+Stat Area stocks and how spatial TAC distribution
+methods affect outcomes. Three distribution methods
+are tested for distributing the aggregate TAC among Stat 
+Areas: (i) proportional to recent spawn indices, (ii) proportional 
+to recent catches, and (iii) allocating the entire TAC to Stat 
+Area 23 (Barkley Sound).
 
 

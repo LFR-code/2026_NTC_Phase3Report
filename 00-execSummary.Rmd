@@ -1,19 +1,19 @@
 # Executive Summary {-}
 
-## Key Points {-}
+## Key Takeaways {-}
 
 - This working paper summarises analyses completed in the
   third year (2025/26) of the ?aayaaqa (Herring) Spawn
   Dynamics project.
 
-- We used computer simulations to test whether a proposed
+- Computer simulations were used to test whether a proposed
   harvest rule could safely re-open the WCVI herring
   fishery. The rule works by estimating how many herring
   are present, ensuring enough are left to spawn (a
   "minimum escapement" level), and only allowing fishing
   on the surplus above that level.
 
-- We tested this rule under three different views of how
+- This rule was tested under three different views of how
   herring populations work, ranging from the standard DFO
   assessment model to models that include predation by
   Humpback Whales, sea lions, seals, and Pacific Hake.
@@ -22,13 +22,17 @@
 
 - **When predation is not included** (current DFO approach),
   the harvest rule performs well: the population stays
-  above conservation thresholds 96\% of the time, and
-  average catches are approximately 1,600 t per year.
+  above the limit reference point 96\% of the time
+  (exceeding the 75\% conservation objective), and
+  average catches are approximately 1,900 t per year.
 
-- **When predation is included**, the herring population
-  is smaller and the fishery would be closed most of the
-  time because the population is already near or below
-  the minimum escapement level.
+- **When predation is included**, the expected herring
+  population is smaller. Under the single-stock predation
+  model, the fishery remains open most years but catches
+  are reduced. Under the three-stock predation model,
+  which also adds spatial structure, the population is
+  near or below the minimum escapement level and the
+  fishery is closed most of the time.
 
 - **The method used to divide the catch among Stat Areas
   (23, 24, and 25) makes very little difference** to
@@ -40,37 +44,56 @@
   uncertainty about predation mortality is the most
   important next step for WCVI herring management.
 
-## Project Summary {-}
+## Summary {-}
 
-This project develops a Nuu-chah-nulth approach to
-ecosystem-based fisheries management (EBFM) by integrating
-life-history traits (e.g., age, size, fecundity) and
-spawning dynamics (e.g., location, timing) in herring
-population models for the West Coast of Vancouver Island
-(WCVI). These models represent key assumptions about how
-herring populations respond to changing ecosystem conditions
-and fisheries on a finer spatial scale than is considered in
-current assessment models for WCVI Pacific Herring.
+WCVI herring commercial fisheries have been closed since
+2006. Before any re-opening can be considered, a harvest
+rule must be developed and tested to ensure it meets
+conservation objectives under a range of assumptions
+about how the population works. In Phase 3 of the
+?aayaaqa (Herring) Spawn Dynamics project, a
+management strategy evaluation (MSE) framework was
+built to do this testing.
 
-In 2024/25 (Phase 2), population dynamics models were
-expanded to include spatial stock structure (three stocks
-corresponding to Stat Areas 23, 24, and 25), predation
-mortality from major herring predators, and age-dependent
-egg production.
+The proposed harvest rule sets a minimum escapement
+level --- a biomass threshold below which the fishery is
+closed. When the estimated population exceeds this
+threshold, the surplus is available for harvest up to a
+maximum rate of 8.47\%. This rule was tested using
+computer simulations driven by three population models
+that differ in their treatment of natural mortality:
+(i) the standard Fisheries and Oceans, Canada (DFO) model 
+with density dependent natural mortality (*SISCAH-DDM*), 
+(ii) a single-stock model that includes predation by Humpback
+Whales, Harbour Seals, Steller Sea Lions, and Pacific
+Hake (*SISCAH-1S-Pred*), and (iii) a three-stock model 
+with the same predators and spatial structure across Statistical 
+Areas 23, 24, and 25 (*SISCAH-3S-Pred*). Three methods for 
+distributing catch among Stat Areas were also evaluated.
 
-This paper summarises analyses conducted in the third year
-(2025/26). Building on the three-stock predation model
-developed in Phase 2, we developed a closed-loop simulation
-framework (management strategy evaluation) to test a
-proposed WCVI herring re-opening procedure under three
-operating models of increasing ecological complexity:
-(i) the *SISCAH-DDM* density-dependent mortality model,
-(ii) the *SISCAH-1S-Pred* single-stock model with
-explicit predation, and (iii) the *SISCAH-3S-Pred*
-three-stock model with predation. The *SISCAH-3S-Pred*
-model serves as a robustness test, representing a scenario
-where the true population is spatially structured while the
-management procedure treats WCVI herring as a single stock.
-Results demonstrate how assumptions about predation and
-spatial structure affect the expected performance of harvest
-control rules and spatial catch allocation methods.
+Under the standard DFO model, the harvest rule performs
+well: the population remains well above conservation
+thresholds and average catches are approximately
+1,900 t per year. When predation is included in a
+single-stock model, catches are reduced but the fishery
+remains open most years. When both predation and spatial
+structure are included (three-stock model), the
+long-term population size is much lower, leading to
+fishery closures in most years because unfished biomass
+is already at or below the minimum escapement level.
+The method used to distribute catch among Stat Areas has
+negligible effect on outcomes under all models tested.
+
+These results show that the proposed harvest rule is
+conservative: even if the standard DFO model is wrong
+about mortality and biomass returns to lower levels in
+the long term, the rule protects the stock by closing
+the fishery when biomass drops below the minimum
+escapement level. The feasibility of a re-opening
+depends primarily on assumptions about predation
+mortality, not on how catch is distributed among areas.
+Reducing uncertainty about predation through
+continued predator monitoring, diet sampling, and
+bio-energetic modelling may be more influential on
+WCVI herring re-opening procedure development than 
+other avenues.
