@@ -515,7 +515,7 @@ plotHCRScatter <- function( obj = simDDM )
   tMP      <- obj$om$tMP
   nT       <- obj$om$nT
   goodReps <- obj$goodReps
-  pT       <- nT - tMP + 1
+  pT       <- nT - tMP
 
   # Bref: fixed HCR parameter (17.35 kt). DDM blobs store it as Bref_p;
   # predM blobs store it as Bref_s.
@@ -524,16 +524,17 @@ plotHCRScatter <- function( obj = simDDM )
   Uref <- obj$ctlList$mp$hcr$inputF_s[1]
 
   # True OM spawning biomass (aggregate across stocks, herring species only)
+  # Drop tMP (first MP year) to avoid constant-catch initialisation artifacts
   SB_ispt <- obj$om$SB_ispt[goodReps, 1, , , drop = FALSE]   # i x 1 x P x T
   B_it    <- matrix(
-    apply(X = SB_ispt, FUN = sum, MARGIN = c(1, 4), na.rm = TRUE)[, tMP:nT],
+    apply(X = SB_ispt, FUN = sum, MARGIN = c(1, 4), na.rm = TRUE)[, (tMP + 1):nT],
     nrow = sum(goodReps), ncol = pT
   )
 
   # Aggregate TAC across all stocks (sum over p dimension)
   TAC_ispt_sub <- obj$mp$hcr$TAC_ispt[goodReps, 1, , , drop = FALSE]
   TAC_it <- matrix(
-    apply(X = TAC_ispt_sub, FUN = sum, MARGIN = c(1, 4), na.rm = TRUE)[, tMP:nT],
+    apply(X = TAC_ispt_sub, FUN = sum, MARGIN = c(1, 4), na.rm = TRUE)[, (tMP + 1):nT],
     nrow = sum(goodReps), ncol = pT
   )
   U_it    <- TAC_it / (B_it + TAC_it)
